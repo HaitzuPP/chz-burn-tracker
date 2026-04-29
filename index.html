@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>$CHZ Value Accrual Tracker</title>
+<title>Chiliz Burn Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -61,6 +61,27 @@
   .live-change.neg { color: var(--red); background: rgba(205,1,36,0.10); }
   .live-meta { font-size: 11px; color: var(--grey); margin-left: 4px; }
 
+  .event-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-size: 12px; transition: all 0.15s ease; }
+  .chip:hover { border-color: var(--red); background: rgba(205,1,36,0.04); }
+  .chip-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+  .chip-date { color: var(--grey); font-weight: 600; }
+  .chip-label { color: var(--ink); font-weight: 700; }
+
+  table.ledger { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  table.ledger th { text-align: left; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  table.ledger td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  table.ledger td.num { font-variant-numeric: tabular-nums; font-weight: 700; }
+  table.ledger tr.proj td { color: var(--grey); }
+  table.ledger tr.proj td.num { color: var(--ink); font-weight: 600; }
+  table.ledger tr:hover { background: #FAFAFA; }
+  table.ledger .source { font-size: 12px; }
+  .status { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 3px; white-space: nowrap; }
+  .status.exec { background: rgba(14,142,90,0.12); color: var(--green); }
+  .status.proj { background: #F3F4F6; color: var(--grey); }
+  .ledger-note { display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; background: rgba(205,1,36,0.04); border-left: 3px solid var(--red); margin: 10px 0 6px; font-size: 12px; line-height: 1.5; }
+  .ledger-note b { color: var(--red); }
+
   .flywheel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 6px; }
   .step { border: 1px solid var(--line); padding: 16px; position: relative; text-align: center; }
   .step .n { font-size: 10px; color: var(--red); font-weight: 700; letter-spacing: 0.1em; }
@@ -90,8 +111,8 @@
   <div class="hero">
     <div>
       <div class="brand">$CHZ Value Accrual</div>
-      <h1>Less CHZ. Every block.</h1>
-      <div class="sub">Fan engagement is now a buyback engine. Watch the supply shrink in real time.</div>
+      <h1>Chiliz Burn Tracker</h1>
+      <div class="sub">Chiliz is the home of sports tokenisation. Since 2018, the dominant issuer for sports fan tokens with clubs including Barcelona, PSG and Manchester City.</div>
     </div>
     <div class="stamp">Updated Apr 2026</div>
   </div>
@@ -140,17 +161,48 @@
           <button data-mode="max">MAX</button>
         </div>
       </div>
-      <p class="takeaway" style="margin-top: 14px;">Live OHLC from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>. Toggle the timeframe to see how the buyback narrative is being priced in.</p>
+      <p class="takeaway" style="margin-top: 14px;">Live data from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>. Switch to 180D or MAX to see the announcement impact.</p>
+      <div class="event-chips">
+        <a class="chip" href="https://x.com/Chiliz/status/2027103512409051232" target="_blank">
+          <span class="chip-dot"></span>
+          <span class="chip-date">Feb 10, 2026</span>
+          <span class="chip-label">Tokenomics 2.0 announced</span>
+        </a>
+        <a class="chip" href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">
+          <span class="chip-dot"></span>
+          <span class="chip-date">Mar 5, 2026</span>
+          <span class="chip-label">First burn executed</span>
+        </a>
+      </div>
       <div class="chart-box tall"><canvas id="livePrice"></canvas></div>
     </div>
   </section>
 
-  <!-- 01 CUMULATIVE BURN -->
+  <!-- 01 FLYWHEEL -->
   <section>
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">01 · CUMULATIVE BURN</div>
+          <div class="eyebrow">01 · THE FLYWHEEL</div>
+          <h2>How fan engagement burns CHZ</h2>
+        </div>
+      </div>
+      <p class="takeaway">Every sale. Every match. Every gas fee. <b>All roads end with less CHZ in circulation.</b></p>
+      <div class="flywheel">
+        <div class="step"><div class="n">01</div><div class="t">Fans buy Fan Tokens</div><div class="d">Demand from 70+ club partners</div></div>
+        <div class="step"><div class="n">02</div><div class="t">Chiliz takes 10% of revenue</div><div class="d">From transactions and marketplace</div></div>
+        <div class="step"><div class="n">03</div><div class="t">Open market CHZ buyback</div><div class="d">Direct buy pressure</div></div>
+        <div class="step"><div class="n">04</div><div class="t">Tokens burned forever</div><div class="d">Supply permanently reduced</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 CUMULATIVE BURN -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">02 · CUMULATIVE BURN</div>
           <h2>Tokens removed, forever</h2>
         </div>
         <div class="toggle" data-chart="cumBurn">
@@ -169,7 +221,7 @@
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">02 · MONTHLY VOLUME</div>
+            <div class="eyebrow">03 · MONTHLY VOLUME</div>
             <h2>Burn rate is accelerating</h2>
           </div>
           <div class="toggle" data-chart="monthly">
@@ -183,7 +235,7 @@
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">03 · BURN SOURCES</div>
+            <div class="eyebrow">04 · BURN SOURCES</div>
             <h2>Where the burns come from</h2>
           </div>
           <div class="toggle" data-chart="sources">
@@ -203,7 +255,7 @@
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">04 · INFLATION SCHEDULE</div>
+            <div class="eyebrow">05 · INFLATION SCHEDULE</div>
             <h2>Issuance is decaying</h2>
           </div>
           <div class="toggle" data-chart="inflation">
@@ -217,7 +269,7 @@
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">05 · NET SUPPLY PATH</div>
+            <div class="eyebrow">06 · NET SUPPLY PATH</div>
             <h2>Issuance vs. burns</h2>
           </div>
           <div class="toggle" data-chart="netSupply">
@@ -236,7 +288,7 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">06 · ANNOUNCEMENT IMPACT</div>
+          <div class="eyebrow">07 · ANNOUNCEMENT IMPACT</div>
           <h2>The chart that says it all</h2>
         </div>
         <div class="toggle" data-chart="priceBurn">
@@ -254,7 +306,7 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">07 · FAN TOKEN PLAY</div>
+          <div class="eyebrow">08 · FAN TOKEN PLAY</div>
           <h2>Win burns. Loss mints.</h2>
         </div>
         <div class="toggle" data-chart="winLoss">
@@ -267,22 +319,95 @@
     </div>
   </section>
 
-  <!-- 08 FLYWHEEL -->
+  <!-- 09 BURN LEDGER -->
   <section>
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">08 · THE FLYWHEEL</div>
-          <h2>How fan engagement burns CHZ</h2>
+          <div class="eyebrow">09 · BURN LEDGER</div>
+          <h2>Transactions and forward projections</h2>
         </div>
       </div>
-      <p class="takeaway">Every sale. Every match. Every gas fee. <b>All roads end with less CHZ in circulation.</b></p>
-      <div class="flywheel">
-        <div class="step"><div class="n">01</div><div class="t">Fans buy Fan Tokens</div><div class="d">Demand from 70+ club partners</div></div>
-        <div class="step"><div class="n">02</div><div class="t">Chiliz takes 10% of revenue</div><div class="d">From transactions and marketplace</div></div>
-        <div class="step"><div class="n">03</div><div class="t">Open market CHZ buyback</div><div class="d">Direct buy pressure</div></div>
-        <div class="step"><div class="n">04</div><div class="t">Tokens burned forever</div><div class="d">Supply permanently reduced</div></div>
+      <p class="takeaway">Executed burns drawn from the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official Chiliz burn report</a>. Projections below are <b>Pylon internal estimates</b> based on current run-rate and 2026 World Cup engagement modelling.</p>
+      <div class="ledger-note">
+        <div><b>Disclosure.</b> Forward-looking rows are Pylon Partners modelled estimates, not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
       </div>
+      <table class="ledger">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>CHZ Burned</th>
+            <th>USD Value</th>
+            <th>Source</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mar 2026</td>
+            <td class="num">7.9M</td>
+            <td class="num">$389K</td>
+            <td class="source">Tokenomics 2.0 launch · FT revenue + EIP-1559</td>
+            <td><span class="status exec">Executed</span></td>
+          </tr>
+          <tr>
+            <td>Apr 2026</td>
+            <td class="num">9.2M</td>
+            <td class="num">$452K</td>
+            <td class="source">Fan Token revenue buyback + EIP-1559</td>
+            <td><span class="status exec">Executed</span></td>
+          </tr>
+          <tr class="proj">
+            <td>May 2026</td>
+            <td class="num">10.5M</td>
+            <td class="num">$516K</td>
+            <td class="source">Continued FT revenue, Fan Token Play live</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>Jun 2026</td>
+            <td class="num">12.0M</td>
+            <td class="num">$590K</td>
+            <td class="source">World Cup pre-tournament engagement uplift</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>Q3 2026</td>
+            <td class="num">38M</td>
+            <td class="num">$1.87M</td>
+            <td class="source">World Cup peak (quarterly)</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>Q4 2026</td>
+            <td class="num">42M</td>
+            <td class="num">$2.07M</td>
+            <td class="source">Sustained run-rate post-World Cup</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>FY 2026</td>
+            <td class="num">120M</td>
+            <td class="num">$5.90M</td>
+            <td class="source">Full-year aggregate</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>FY 2027</td>
+            <td class="num">220M</td>
+            <td class="num">$10.82M</td>
+            <td class="source">Annual estimate at compounding revenue</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+          <tr class="proj">
+            <td>FY 2028</td>
+            <td class="num">310M</td>
+            <td class="num">$15.25M</td>
+            <td class="source">Continued compounding, Fan Token Play scaling</td>
+            <td><span class="status proj">Projected</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
