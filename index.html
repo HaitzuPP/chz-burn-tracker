@@ -186,7 +186,7 @@
           <button data-mode="max">MAX</button>
         </div>
       </div>
-      <p class="takeaway" style="margin-top: 14px;">Live data from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>. Switch to 180D or MAX to see the announcement impact.</p>
+      <p class="takeaway" style="margin-top: 14px;">Spot price feeds live from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>. Switching to 180D or MAX overlays the Tokenomics 2.0 announcement and first burn directly onto the price chart, so you can see exactly when the market started repricing CHZ as a deflationary asset.</p>
       <div class="event-chips">
         <a class="chip" href="https://x.com/Chiliz/status/2027103512409051232" target="_blank">
           <span class="chip-dot"></span>
@@ -212,7 +212,7 @@
           <h2>Feb 2026: the moment CHZ flipped</h2>
         </div>
       </div>
-      <p class="takeaway">For five years, CHZ was a passive ecosystem currency. Inflation only, no buyback. Then Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced</a> that <b>10% of all Fan Token revenue would be used to buy back and burn $CHZ</b>. Fan engagement now translates directly into CHZ supply reduction. Every sale, every match, every gas fee, less $CHZ in circulation forever.</p>
+      <p class="takeaway">CHZ spent five years as an inflation-only ecosystem currency with no value-accrual mechanism, despite Chiliz building the dominant Fan Token franchise in sport. That changed in February 2026, when Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced</a> that <b>10% of all Fan Token revenue would be redirected into open-market CHZ buybacks and burns</b>. That single decision converted CHZ from a passive utility token into the primary financial beneficiary of every Fan Token sale, every marketplace trade, and every block produced on the chain.</p>
       <div class="flywheel">
         <div class="step"><div class="n">BEFORE</div><div class="t">CHZ inflated 8.8%</div><div class="d">No burn, no buyback. Pure issuance.</div></div>
         <div class="step"><div class="n">FEB 2026</div><div class="t">Tokenomics 2.0 announced</div><div class="d">10% of FT revenue buys CHZ from market</div></div>
@@ -235,42 +235,26 @@
           <button data-mode="usd">USD</button>
         </div>
       </div>
-      <p class="takeaway">Tokenomics 2.0 went live in March. <b>18M CHZ vanished in 60 days.</b> The old gas only regime took years to do the same.</p>
+      <p class="takeaway">Tokenomics 2.0 went live in March 2026 and removed roughly <b>18 million CHZ from circulation in just 60 days</b>. To put that in context, the previous gas-fee-only burn regime needed multiple years to take an equivalent amount of supply out of the market. The cumulative line below is no longer a slow drift, it is a step change in how value accrues to the token.</p>
       <div class="chart-box tall"><canvas id="cumBurn"></canvas></div>
     </div>
   </section>
 
-  <!-- 02 + 03 -->
+  <!-- 03 MONTHLY VOLUME (full width) -->
   <section>
-    <div class="row">
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="eyebrow">03 · MONTHLY VOLUME</div>
-            <h2>Burn rate is accelerating</h2>
-          </div>
-          <div class="toggle" data-chart="monthly">
-            <button class="active" data-mode="chz">CHZ</button>
-            <button data-mode="usd">USD</button>
-          </div>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">03 · MONTHLY VOLUME</div>
+          <h2>Burn rate is accelerating</h2>
         </div>
-        <p class="takeaway">March was a step function. April topped it. <b>Every match, marketplace trade, and gas fee feeds the fire.</b></p>
-        <div class="chart-box"><canvas id="monthly"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="eyebrow">04 · BURN SOURCES</div>
-            <h2>Where the burns come from</h2>
-          </div>
-          <div class="toggle" data-chart="sources">
-            <button class="active" data-mode="pct">SHARE</button>
-            <button data-mode="chz">CHZ</button>
-          </div>
+        <div class="toggle" data-chart="monthly">
+          <button class="active" data-mode="chz">CHZ</button>
+          <button data-mode="usd">USD</button>
         </div>
-        <p class="takeaway"><b>Fan Token revenue buyback drives 72%</b> of all burns. Use the chain, shrink the float.</p>
-        <div class="chart-box"><canvas id="sources"></canvas></div>
       </div>
+      <p class="takeaway">March 2026 was the step-function moment for CHZ, and April topped it. Burn velocity is no longer dependent on gas fees alone. Every Fan Token sale, every marketplace trade, and every transaction on the network now feeds directly into open-market buybacks. <b>The pace is compounding, not flattening.</b></p>
+      <div class="chart-box"><canvas id="monthly"></canvas></div>
     </div>
   </section>
 
@@ -280,7 +264,7 @@
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">05 · INFLATION SCHEDULE</div>
+            <div class="eyebrow">04 · INFLATION SCHEDULE</div>
             <h2>Issuance is decaying</h2>
           </div>
           <div class="toggle" data-chart="inflation">
@@ -288,13 +272,13 @@
             <button data-mode="chz">CHZ</button>
           </div>
         </div>
-        <p class="takeaway">Inflation drops from <b>8.8% to 1.88%</b> across 14 years. The bar for net deflation gets lower every year.</p>
+        <p class="takeaway">CHZ issuance follows a programmed decay schedule, falling from <b>8.8% in 2026 to a 1.88% terminal rate by 2040</b>. Every year, the bar that burns need to clear in order to flip CHZ into net deflation drops materially. Burns do not need to scale exponentially to win this race. They just need to keep compounding while issuance grinds lower.</p>
         <div class="chart-box"><canvas id="inflation"></canvas></div>
       </div>
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="eyebrow">06 · NET SUPPLY PATH</div>
+            <div class="eyebrow">05 · NET SUPPLY PATH</div>
             <h2>Issuance vs. burns</h2>
           </div>
           <div class="toggle" data-chart="netSupply">
@@ -302,7 +286,7 @@
             <button data-mode="usd">USD</button>
           </div>
         </div>
-        <p class="takeaway">If burns keep compounding, the curves cross by <b>2030</b>. Supply turns negative.</p>
+        <p class="takeaway">On Pylon's central case, the burn curve crosses the issuance curve by <b>2030</b>. From that point forward, CHZ supply contracts every single year. The combination of a decaying inflation schedule and a buyback engine that scales with ecosystem revenue is what makes the long-term math work for holders.</p>
         <div class="chart-box"><canvas id="netSupply"></canvas></div>
       </div>
     </div>
@@ -313,7 +297,7 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">07 · ANNOUNCEMENT IMPACT</div>
+          <div class="eyebrow">06 · ANNOUNCEMENT IMPACT</div>
           <h2>The chart that says it all</h2>
         </div>
         <div class="toggle" data-chart="priceBurn">
@@ -321,7 +305,7 @@
           <button data-mode="usd">USD</button>
         </div>
       </div>
-      <p class="takeaway">Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced the buyback program</a> in Feb 2026. Markets reacted within weeks. By March the first burns hit and scaled <b>50x in 60 days</b>. CHZ rerated <b>+50% in two months</b>. The flywheel is live.</p>
+      <p class="takeaway">Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced the Tokenomics 2.0 buyback program</a> on February 10, 2026, and the market began pricing it in within weeks. By March, the first burns had executed, and within 60 days monthly burn volume had scaled <b>fifty times above its prior baseline</b>. CHZ rerated approximately <b>+50% in the same window</b>. This is no longer a thesis being argued, it is being executed in real time.</p>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
     </div>
   </section>
@@ -331,7 +315,7 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">08 · FAN TOKEN PLAY</div>
+          <div class="eyebrow">07 · FAN TOKEN PLAY</div>
           <h2>Win burns. Loss mints.</h2>
         </div>
         <div class="toggle" data-chart="winLoss">
@@ -339,7 +323,7 @@
           <button data-mode="split">SPLIT</button>
         </div>
       </div>
-      <p class="takeaway"><b>This applies to club Fan Tokens, not $CHZ.</b> Wins burn club tokens like $BAR, $PSG, $JUV. Losses mint them. The CHZ link is indirect: more Fan Token engagement means more revenue, which means more CHZ buybacks above. Hard cap at 75% net reduction.</p>
+      <p class="takeaway"><b>Fan Token Play affects club tokens like $BAR, $PSG, and $JUV, not CHZ itself.</b> Match wins burn the club's Fan Tokens, losses mint them, and net supply changes are capped at a 75% lifetime reduction per token. The relevance to CHZ is indirect but powerful: anything that drives Fan Token engagement also drives the revenue base that funds CHZ buybacks. This is the demand-side mechanism that keeps the supply-side flywheel turning.</p>
       <div class="chart-box"><canvas id="winLoss"></canvas></div>
     </div>
   </section>
@@ -349,11 +333,11 @@
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">09 · BURN TOTALS</div>
+          <div class="eyebrow">08 · BURN TOTALS</div>
           <h2>Transactions and forward projections</h2>
         </div>
       </div>
-      <p class="takeaway">Executed totals drawn from the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official Chiliz burn report</a>. Forward-looking figures are <b>Pylon internal projections</b> based on the buyback flywheel compounding with World Cup engagement and recurring Fan Token revenue.</p>
+      <p class="takeaway">Executed totals are sourced directly from the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official Chiliz burn report</a>. Forward figures are Pylon Partners' internal projections, modelled on Fan Token revenue compounding through the 2026 World Cup cycle and the buyback engine running at a sustained run-rate. By 2028, this implies <b>more than 650 million CHZ permanently removed from supply</b>, which translates to roughly $32 million in cumulative buy-side pressure at current prices.</p>
       <div class="ledger-note">
         <div><b>Disclosure.</b> Forward-looking figures are Pylon Partners modelled estimates. They are not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
       </div>
@@ -588,36 +572,8 @@ chartConfigs.monthly = {
   }
 };
 
-// ---------- 03 BURN SOURCES ----------
-const srcLabels = ['Fan Token Revenue Buyback', 'EIP-1559 Gas Burn', 'Fan Token Play (Win Burn)'];
-const srcPct = [72, 18, 10];
-const srcChz = [6.62, 1.66, 0.92]; // M CHZ April attribution
-chartConfigs.sources = {
-  build(mode) {
-    const data = mode === 'pct' ? srcPct : srcChz;
-    const suffix = mode === 'pct' ? '%' : 'M CHZ';
-    return {
-      type: 'doughnut',
-      data: {
-        labels: srcLabels,
-        datasets: [{
-          data, backgroundColor: [RED, '#1F2937', '#9CA3AF'],
-          borderColor: '#fff', borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: '62%', animation: { duration: 400 },
-        plugins: {
-          legend: { position: 'bottom', labels: { color: INK, boxWidth: 10, font: { size: 11 }, padding: 12 } },
-          tooltip: { callbacks: { label: c => c.label + ': ' + c.parsed + ' ' + suffix } }
-        }
-      }
-    };
-  }
-};
-
 // ---------- 04 INFLATION SCHEDULE ----------
-const yrs14 = []; for (let i = 0; i <= 14; i++) yrs14.push('Y' + i);
+const yrs14 = []; for (let i = 0; i <= 14; i++) yrs14.push(String(2026 + i));
 const startInf = 8.8, endInf = 1.88;
 const infPct = yrs14.map((_, i) => +(endInf + (startInf - endInf) * Math.pow(1 - i / 14, 1.6)).toFixed(2));
 // Approximate annual issuance in M CHZ assuming compounding supply
