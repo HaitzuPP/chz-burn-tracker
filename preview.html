@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chiliz Burn Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #CD0124;
+    --green: #0E8E5A;
+    --grey: #6B7280;
+    --line: #E5E7EB;
+    --bg: #FFFFFF;
+    --ink: #0A0A0A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  .hero { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 40px; }
+  .brand { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); font-weight: 700; }
+  h1 { font-size: 44px; margin: 8px 0 0; font-weight: 800; letter-spacing: -0.015em; line-height: 1.05; }
+  .sub { color: var(--grey); font-size: 14px; margin-top: 8px; max-width: 520px; }
+  .stamp { text-align: right; font-size: 11px; color: var(--grey); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; border: 1px solid var(--line); margin-bottom: 56px; }
+  .kpi { padding: 18px 20px; border-right: 1px solid var(--line); }
+  .kpi:last-child { border-right: none; }
+  .kpi .label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); }
+  .kpi .value { font-size: 26px; font-weight: 800; margin-top: 4px; letter-spacing: -0.01em; }
+  .kpi .delta { font-size: 12px; margin-top: 2px; color: var(--green); font-weight: 600; }
+  .kpi .delta.down { color: var(--red); }
+
+  section { margin-bottom: 56px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .card { border: 1px solid var(--line); padding: 22px 24px 18px; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .card-head > div:first-child { flex: 1; min-width: 0; }
+  .eyebrow { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 700; }
+  h2 { font-size: 20px; font-weight: 800; margin: 6px 0 10px; letter-spacing: -0.01em; }
+  .takeaway { font-size: 13px; color: var(--ink); margin: 0 0 16px; line-height: 1.5; }
+  .takeaway b { color: var(--red); }
+  .chart-box { position: relative; height: 280px; }
+  .chart-box.tall { height: 360px; }
+
+  .toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; font-size: 10px; flex-shrink: 0; }
+  .toggle button {
+    background: transparent; border: 0; padding: 5px 12px; cursor: pointer;
+    border-radius: 999px; color: var(--grey); font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .toggle button:hover { color: var(--ink); }
+  .toggle button.active { background: var(--ink); color: #fff; }
+
+  .live-stat { display: flex; align-items: baseline; gap: 12px; margin-top: 6px; }
+  .live-price { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+  .live-change { font-size: 14px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+  .live-change.pos { color: var(--green); background: rgba(14,142,90,0.10); }
+  .live-change.neg { color: var(--red); background: rgba(205,1,36,0.10); }
+  .live-meta { font-size: 11px; color: var(--grey); margin-left: 4px; }
+
+  .event-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-size: 12px; transition: all 0.15s ease; }
+  .chip:hover { border-color: var(--red); background: rgba(205,1,36,0.04); }
+  .chip-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+  .chip-date { color: var(--grey); font-weight: 600; }
+  .chip-label { color: var(--ink); font-weight: 700; }
+
+  table.ledger { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  table.ledger th { text-align: left; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  table.ledger td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  table.ledger td.num { font-variant-numeric: tabular-nums; font-weight: 700; }
+  table.ledger tr.proj td { color: var(--grey); }
+  table.ledger tr.proj td.num { color: var(--ink); font-weight: 600; }
+  table.ledger tr:hover { background: #FAFAFA; }
+  table.ledger .source { font-size: 12px; }
+  .status { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 3px; white-space: nowrap; }
+  .status.exec { background: rgba(14,142,90,0.12); color: var(--green); }
+  .status.proj { background: #F3F4F6; color: var(--grey); }
+  .ledger-note { display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; background: rgba(205,1,36,0.04); border-left: 3px solid var(--red); margin: 10px 0 6px; font-size: 12px; line-height: 1.5; }
+  .ledger-note b { color: var(--red); }
+
+  .totals-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); margin-top: 14px; }
+  .total-card { padding: 18px 20px; border-right: 1px solid var(--line); }
+  .total-card:last-child { border-right: none; }
+  .total-card.exec { background: rgba(14,142,90,0.05); }
+  .t-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); font-weight: 700; }
+  .total-card.exec .t-label { color: var(--green); }
+  .t-value { font-size: 28px; font-weight: 800; margin-top: 6px; letter-spacing: -0.01em; }
+  .t-value .unit { font-size: 13px; color: var(--grey); font-weight: 700; margin-left: 3px; }
+  .t-usd { font-size: 12px; color: var(--grey); margin-top: 2px; font-weight: 600; }
+
+  .grand-total { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; background: var(--ink); color: #fff; border: 1px solid var(--ink); border-top: 0; }
+  .gt-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+  .gt-right { text-align: right; }
+  .gt-value { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .gt-value .unit { font-size: 16px; opacity: 0.7; margin-left: 6px; font-weight: 700; }
+  .gt-usd { font-size: 13px; font-weight: 700; opacity: 0.85; margin-top: 2px; }
+
+  @media (max-width: 820px) {
+    .totals-grid { grid-template-columns: 1fr 1fr; }
+    .total-card:nth-child(2) { border-right: none; }
+    .total-card:nth-child(1), .total-card:nth-child(2) { border-bottom: 1px solid var(--line); }
+    .grand-total { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .gt-right { text-align: left; }
+  }
+
+  /* TL;DR callout */
+  .tldr { border: 1px solid var(--ink); padding: 22px 28px 24px; margin-bottom: 36px; background: rgba(205,1,36,0.025); }
+  .tldr-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); font-weight: 800; margin-bottom: 14px; }
+  .tldr ul { list-style: none; padding: 0; margin: 0; }
+  .tldr li { position: relative; padding: 9px 0 9px 22px; font-size: 13.5px; line-height: 1.55; color: var(--ink); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tldr li:last-child { border-bottom: none; }
+  .tldr li::before { content: "●"; position: absolute; left: 4px; color: var(--red); font-size: 9px; top: 14px; }
+  .tldr li b { color: var(--red); font-weight: 800; }
+  .tldr li .stat { display: inline-block; min-width: 78px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+
+  /* Bullet takeaways inside cards */
+  ul.bullets { list-style: none; padding: 0; margin: 0 0 18px; }
+  ul.bullets li { position: relative; padding: 5px 0 5px 18px; font-size: 13px; line-height: 1.55; color: var(--ink); }
+  ul.bullets li::before { content: "•"; position: absolute; left: 2px; color: var(--red); font-weight: 800; font-size: 16px; line-height: 1.4; }
+  ul.bullets li b { color: var(--red); }
+
+  /* Section sub-heads inside cards */
+  .section-sub { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 700; margin: 26px 0 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+  /* Methodology */
+  .methodology { display: grid; grid-template-columns: 1.1fr 0.7fr 1.6fr; row-gap: 0; }
+  .meth-row { display: contents; }
+  .meth-row > div { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .meth-label { color: var(--grey); font-weight: 600; }
+  .meth-value { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .meth-note { color: var(--grey); padding-left: 12px !important; }
+
+  /* Scenarios */
+  .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); }
+  .scen { padding: 16px 18px; border-right: 1px solid var(--line); }
+  .scen:last-child { border-right: none; }
+  .scen-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; margin-bottom: 6px; }
+  .scen-bear .scen-label { color: var(--red); }
+  .scen-base .scen-label { color: var(--ink); }
+  .scen-bull .scen-label { color: var(--green); }
+  .scen-base { background: rgba(0,0,0,0.025); }
+  .scen-value { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .scen-value .unit { font-size: 12px; color: var(--grey); font-weight: 700; margin-left: 3px; }
+  .scen-usd { font-size: 12px; color: var(--grey); font-weight: 600; margin-top: 1px; }
+  .scen-note { font-size: 11px; color: var(--grey); margin-top: 8px; line-height: 1.45; }
+
+  /* On-chain verification */
+  .verify-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--line); background: #FAFAFA; font-size: 12px; flex-wrap: wrap; }
+  .verify-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--grey); }
+  .verify-addr { font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: var(--ink); flex: 1; word-break: break-all; }
+  .verify-link { color: var(--red); font-weight: 700; text-decoration: none; white-space: nowrap; }
+  .verify-link:hover { text-decoration: underline; }
+
+  @media (max-width: 820px) {
+    .methodology { grid-template-columns: 1fr 1fr; }
+    .meth-note { display: none; }
+    .scenarios { grid-template-columns: 1fr; }
+    .scen { border-right: none; border-bottom: 1px solid var(--line); }
+    .scen:last-child { border-bottom: none; }
+  }
+
+  .flywheel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 6px; }
+  .step { border: 1px solid var(--line); padding: 16px; position: relative; text-align: center; }
+  .step .n { font-size: 10px; color: var(--red); font-weight: 700; letter-spacing: 0.1em; }
+  .step .t { font-size: 13px; font-weight: 700; margin-top: 4px; }
+  .step .d { font-size: 11px; color: var(--grey); margin-top: 4px; line-height: 1.35; }
+  .step:not(:last-child)::after { content: "›"; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--red); font-weight: 800; font-size: 18px; }
+
+  footer { font-size: 11px; color: var(--grey); border-top: 1px solid var(--line); padding-top: 20px; margin-top: 72px; line-height: 1.7; }
+  footer a { color: var(--grey); }
+
+  @media (max-width: 820px) {
+    .row { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpi:nth-child(2) { border-right: none; }
+    .kpi:nth-child(1), .kpi:nth-child(2) { border-bottom: 1px solid var(--line); }
+    .flywheel { grid-template-columns: 1fr 1fr; }
+    .step:not(:last-child)::after { display: none; }
+    h1 { font-size: 32px; }
+    .card-head { flex-wrap: wrap; }
+  }
+
+  /* === Mobile (≤600px) === */
+  @media (max-width: 600px) {
+    .wrap { padding: 28px 14px 56px; }
+
+    /* Hero: stack stamp under content, left-align */
+    .hero { flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 20px; margin-bottom: 28px; }
+    .stamp { text-align: left; font-size: 10px; }
+    h1 { font-size: 26px; line-height: 1.1; }
+    .sub { font-size: 13px; line-height: 1.55; }
+
+    /* TL;DR */
+    .tldr { padding: 18px 18px 16px; margin-bottom: 28px; }
+    .tldr-eyebrow { font-size: 10px; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .tldr li { font-size: 12.5px; padding: 10px 0 10px 16px; }
+    .tldr li::before { top: 14px; font-size: 8px; }
+    .tldr li .stat { display: block; min-width: 0; color: var(--red); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; }
+
+    /* KPI strip */
+    .kpis { margin-bottom: 36px; }
+    .kpi { padding: 14px 14px; }
+    .kpi .value { font-size: 22px; }
+    .kpi .label { font-size: 10px; }
+    .kpi .delta { font-size: 11px; }
+
+    /* Cards */
+    section { margin-bottom: 36px; }
+    .card { padding: 18px 16px 14px; }
+    .card-head { gap: 12px; }
+    h2 { font-size: 17px; line-height: 1.25; }
+
+    /* Body copy */
+    .takeaway { font-size: 12.5px; }
+    ul.bullets li { font-size: 12.5px; padding: 5px 0 5px 16px; }
+    ul.bullets li::before { font-size: 14px; }
+
+    /* Toggles: bigger touch targets */
+    .toggle { padding: 3px; }
+    .toggle button { padding: 8px 13px; font-size: 11px; min-height: 32px; }
+    .toggle[data-chart="livePrice"] { flex-wrap: wrap; }
+
+    /* Live price stat */
+    .live-stat { flex-wrap: wrap; gap: 6px 10px; }
+    .live-price { font-size: 26px; }
+    .live-change { font-size: 13px; padding: 3px 8px; }
+    .live-meta { font-size: 11px; margin-left: 0; width: 100%; }
+
+    /* Event chips */
+    .event-chips { gap: 6px; }
+    .chip { padding: 7px 12px; font-size: 11px; }
+    .chip-date { font-size: 10px; }
+    .chip-label { font-size: 11px; }
+
+    /* Charts */
+    .chart-box { height: 240px; }
+    .chart-box.tall { height: 280px; }
+
+    /* Section sub-heads inside cards */
+    .section-sub { font-size: 10px; margin: 22px 0 10px; padding-top: 14px; }
+
+    /* Flywheel: stack to 1 column on mobile */
+    .flywheel { grid-template-columns: 1fr; gap: 8px; }
+    .step { padding: 12px 14px; text-align: left; }
+    .step .n { font-size: 9px; }
+
+    /* Methodology: clean stack with all info visible */
+    .methodology { grid-template-columns: 1fr; }
+    .meth-row { display: block !important; padding: 12px 0 !important; border-bottom: 1px solid var(--line) !important; }
+    .meth-row > div { padding: 0 !important; border-bottom: none !important; font-size: 12px; }
+    .meth-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); margin-bottom: 3px; }
+    .meth-value { font-size: 16px; }
+    .meth-note { display: block !important; padding-left: 0 !important; margin-top: 4px; font-size: 11px; line-height: 1.45; }
+
+    /* Totals: 1 col on mobile (override 820 rule) */
+    .totals-grid { grid-template-columns: 1fr; }
+    .total-card { border-right: none !important; border-bottom: 1px solid var(--line) !important; padding: 16px 18px; }
+    .total-card:last-child { border-bottom: none !important; }
+    .t-value { font-size: 24px; }
+    .t-label { font-size: 10px; }
+
+    /* Grand total */
+    .grand-total { padding: 18px 16px; }
+    .gt-value { font-size: 28px; }
+    .gt-label { font-size: 10px; letter-spacing: 0.12em; }
+    .gt-usd { font-size: 12px; }
+
+    /* Scenarios */
+    .scen { padding: 14px 16px; }
+    .scen-value { font-size: 20px; }
+    .scen-note { font-size: 11px; }
+
+    /* On-chain verify: stack address + link */
+    .verify-row { gap: 6px; padding: 12px 14px; flex-direction: column; align-items: flex-start; }
+    .verify-addr { font-size: 11px; width: 100%; }
+    .verify-link { font-size: 12px; padding-top: 2px; }
+
+    /* Disclosure note */
+    .ledger-note { padding: 12px 14px; font-size: 11.5px; }
+
+    /* Footer */
+    footer { font-size: 11px; padding-top: 16px; margin-top: 48px; line-height: 1.6; }
+    footer > div { margin-bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <h1>Chiliz Burn Tracker</h1>
+      <div class="sub">In February 2026, Chiliz committed 10% of all Fan Token revenue to open-market CHZ buybacks and burns. Since its 2018 launch, CHZ had operated as a pure inflation token. That regime has now flipped.</div>
+    </div>
+    <div class="stamp">Astra Research<br/>Apr 2026</div>
+  </div>
+
+  <!-- TL;DR -->
+  <div class="tldr">
+    <div class="tldr-eyebrow">TL;DR · The Allocator's 60-Second Read</div>
+    <ul>
+      <li><span class="stat">FEB '26</span> <b>Catalyst:</b> Chiliz committed 10% of all Fan Token revenue to open-market CHZ buybacks and burns.</li>
+      <li><span class="stat">9.2M</span> <b>Executed:</b> CHZ permanently burned in April 2026 alone, around 50x the prior gas-only monthly baseline.</li>
+      <li><span class="stat">+50%</span> <b>Rerate:</b> CHZ rerated approximately +50% from February lows as the market priced in the new regime.</li>
+      <li><span class="stat">2030</span> <b>Crossover:</b> Projected year of net deflation under Astra Research's central case.</li>
+    </ul>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Price</div>
+      <div class="value">$0.0492</div>
+      <div class="delta">+25% YTD</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Market Cap</div>
+      <div class="value">$508M</div>
+      <div class="delta">Top 100</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Circulating Supply</div>
+      <div class="value">10.33B</div>
+      <div class="delta down">+3.4% YoY</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Burned (Apr '26)</div>
+      <div class="value">9.2M</div>
+      <div class="delta">≈ $452K</div>
+    </div>
+  </div>
+
+  <!-- 01 THE CATALYST (announcement chart + flywheel) -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">01 · THE CATALYST</div>
+          <h2>Feb 2026: the moment CHZ flipped</h2>
+        </div>
+        <div class="toggle" data-chart="priceBurn">
+          <button class="active" data-mode="chz">CHZ</button>
+          <button data-mode="usd">USD</button>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li><b>Catalyst:</b> February 2026 <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announcement</a> committing 10% of Fan Token revenue to open-market CHZ buybacks and burns, as part of the Chiliz 2030 roadmap.</li>
+        <li><b>Mechanism:</b> Since the 2018 launch, CHZ inflated annually with no offsetting burn. Fan engagement now translates directly into CHZ supply reduction.</li>
+        <li><b>Result:</b> Chart below maps the announcement and first burn period against price action.</li>
+      </ul>
+      <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
+      <h3 class="section-sub">The flywheel, end to end</h3>
+      <div class="flywheel">
+        <div class="step"><div class="n">2018 TO 2025</div><div class="t">CHZ inflated annually</div><div class="d">No burn, no buyback. Pure issuance currency.</div></div>
+        <div class="step"><div class="n">FEB 2026</div><div class="t">Buyback program announced</div><div class="d">10% of FT revenue buys CHZ from open market</div></div>
+        <div class="step"><div class="n">MAR TO APR 2026</div><div class="t">First burns executed</div><div class="d">9.2M CHZ removed in April per official report</div></div>
+        <div class="step"><div class="n">TODAY</div><div class="t">Flywheel is live</div><div class="d">Burns scaled around 50x prior baseline</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE PRICE (secondary, after the catalyst) -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">$CHZ · LIVE PRICE · 180D</div>
+          <h2 style="margin-bottom: 4px;">Chiliz / USD</h2>
+          <div class="live-stat">
+            <span class="live-price" id="chzLivePrice">$0.0000</span>
+            <span class="live-change pos" id="chzLiveChange">+0.0%</span>
+            <span class="live-meta" id="chzLiveMeta">over 180D</span>
+          </div>
+        </div>
+      </div>
+      <ul class="bullets" style="margin-top: 14px;">
+        <li>Spot price live from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>, refreshed on every page load.</li>
+        <li>The chart auto-marks the <b>announcement</b> and <b>first burn</b> dates so you can see them directly against price action.</li>
+      </ul>
+      <div class="event-chips">
+        <a class="chip" href="https://x.com/Chiliz/status/2027103512409051232" target="_blank">
+          <span class="chip-dot"></span>
+          <span class="chip-date">Feb 9, 2026</span>
+          <span class="chip-label">Buyback program announced</span>
+        </a>
+        <a class="chip" href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">
+          <span class="chip-dot"></span>
+          <span class="chip-date">Apr 10, 2026</span>
+          <span class="chip-label">First burn report published</span>
+        </a>
+      </div>
+      <div class="chart-box tall"><canvas id="livePrice"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 02 BURN ACTIVITY (cumulative + monthly paired) -->
+  <section>
+    <div class="row">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">02a · CUMULATIVE</div>
+            <h2>Tokens removed, forever</h2>
+          </div>
+          <div class="toggle" data-chart="cumBurn">
+            <button class="active" data-mode="chz">CHZ</button>
+            <button data-mode="usd">USD</button>
+          </div>
+        </div>
+        <ul class="bullets">
+          <li>Buyback burns began rolling out in early Q2 2026.</li>
+          <li><b>9.2M CHZ removed</b> in April 2026 per the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official burn report</a>.</li>
+          <li>The prior gas-fee-only regime took years to remove a comparable amount.</li>
+        </ul>
+        <div class="chart-box"><canvas id="cumBurn"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">02b · MONTHLY</div>
+            <h2>Burn rate is accelerating</h2>
+          </div>
+          <div class="toggle" data-chart="monthly">
+            <button class="active" data-mode="chz">CHZ</button>
+            <button data-mode="usd">USD</button>
+          </div>
+        </div>
+        <ul class="bullets">
+          <li>March was the step-function moment.</li>
+          <li>April topped it (9.2M CHZ burned).</li>
+          <li><b>Pace is compounding</b> as Fan Token engagement scales the buyback base.</li>
+        </ul>
+        <div class="chart-box"><canvas id="monthly"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 LONG-TERM SUPPLY MATH -->
+  <section>
+    <div class="card" style="border: none; padding: 0 0 16px;">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">03 · LONG-TERM SUPPLY MATH</div>
+          <h2>The path to net deflation</h2>
+        </div>
+      </div>
+      <ul class="bullets" style="margin-bottom: 0;">
+        <li>Issuance decays from <b>8.8% in 2026 to 1.88% by 2040</b>, on a programmed schedule.</li>
+        <li>Burn curve crosses issuance curve by <b>2030</b> under the central case.</li>
+        <li>From crossover onward, CHZ supply contracts every year.</li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">03a · INFLATION DECAY</div>
+            <h2>Issuance schedule</h2>
+          </div>
+          <div class="toggle" data-chart="inflation">
+            <button class="active" data-mode="pct">RATE</button>
+            <button data-mode="chz">CHZ</button>
+          </div>
+        </div>
+        <div class="chart-box"><canvas id="inflation"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">03b · NET SUPPLY PATH</div>
+            <h2>Issuance vs. burns</h2>
+          </div>
+          <div class="toggle" data-chart="netSupply">
+            <button class="active" data-mode="chz">CHZ</button>
+            <button data-mode="usd">USD</button>
+          </div>
+        </div>
+        <div class="chart-box"><canvas id="netSupply"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 04 STAKE COMPRESSION -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">04 · STAKE COMPRESSION</div>
+          <h2>Liquid float, locked from both ends</h2>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li><b>2.42B CHZ staked</b> on Chiliz Chain today, around 23% of circulating supply, secured by 13 active validators.</li>
+        <li>Stake peaked at 2.69B in late November 2025, then trended lower through the buyback announcement window as holders repositioned. Bottomed at 2.25B in late February before stabilising.</li>
+        <li><b>The thesis:</b> as burns shrink total supply and staking locks the rest, the liquid tradeable float compresses on both ends. That is the structural setup that makes price moves more responsive to flow.</li>
+      </ul>
+
+      <div class="totals-grid">
+        <div class="total-card exec">
+          <div class="t-label">Total Staked</div>
+          <div class="t-value">2.42<span class="unit">B CHZ</span></div>
+          <div class="t-usd">≈ $119M at current price</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">% of circulating</div>
+          <div class="t-value">23.4<span class="unit">%</span></div>
+          <div class="t-usd">10.33B CHZ outstanding</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">30D net change</div>
+          <div class="t-value">-0.3<span class="unit">%</span></div>
+          <div class="t-usd">-6M CHZ flat trend</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">90D net change</div>
+          <div class="t-value">-3.4<span class="unit">%</span></div>
+          <div class="t-usd">-86M CHZ unstaked</div>
+        </div>
+      </div>
+
+      <div class="chart-box tall" style="margin-top: 22px;"><canvas id="stake"></canvas></div>
+
+      <div class="ledger-note" style="margin-top: 14px;">
+        <div><b>Data source:</b> Read directly from the Chiliz Chain validator system contract at <a href="https://scan.chiliz.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...1000</a> via public RPC. Snapshots refreshed daily. The 11-validator figure in Chiliz docs has expanded to 13 active validators today.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
+
+    <div style="border-top: 1px solid var(--line); padding-top: 14px; margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Operator:</strong> This website is operated by <strong>Astra Research</strong>, an independent research firm. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. All information presented is sourced from public materials and Astra Research analysis.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">No investment advice:</strong> The content on this site is for informational and educational purposes only. It does not constitute investment advice, financial advice, trading advice, legal advice, tax advice, or any other form of professional advice. No content here should be construed as a recommendation to buy, sell, or hold any digital asset, security, or other financial instrument.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Forward-looking statements:</strong> All projections, forecasts, scenarios, and forward-looking figures shown on this page are Astra Research modelled estimates based on assumptions and public data. They are not Chiliz guidance, do not represent guarantees of future performance, and may differ materially from actual results.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Risk warning:</strong> Cryptocurrency holdings, including CHZ, carry significant risk including the potential total loss of principal. Past performance is not indicative of future results. Always conduct your own research and consult a qualified professional before making any investment decisions.
+    </div>
+
+    <div style="margin-top: 14px; color: var(--grey);">© 2026 Astra Research. All rights reserved.</div>
+  </footer>
+
+</div>
+
+<script>
+const RED = '#CD0124', GREEN = '#0E8E5A', GREY = '#6B7280', INK = '#0A0A0A', LINE = '#E5E7EB';
+const PRICE = 0.0492; // CHZ to USD reference
+
+Chart.defaults.font.family = 'Arial, Helvetica, sans-serif';
+Chart.defaults.color = INK;
+Chart.defaults.borderColor = LINE;
+
+const fmtMoney = v => {
+  if (Math.abs(v) >= 1) return '$' + v.toFixed(2) + 'M';
+  if (Math.abs(v) >= 0.001) return '$' + (v * 1000).toFixed(0) + 'K';
+  return '$' + (v * 1000000).toFixed(0);
+};
+const fmtChz = v => v.toFixed(v < 1 ? 2 : 1) + 'M';
+const fmtChzK = v => v.toFixed(0) + 'K';
+
+const chartRefs = {};
+const chartConfigs = {};
+
+// Helpers
+const baseGrid = { color: LINE, drawBorder: false };
+const noGrid = { display: false };
+const isMobile = () => (typeof window !== 'undefined' && window.innerWidth < 600);
+const tickStyle = () => ({ color: GREY, font: { size: isMobile() ? 9 : 11 } });
+const xTicks = (maxDesktop, maxMobile) => ({
+  ...tickStyle(), autoSkip: true, maxRotation: 0,
+  maxTicksLimit: isMobile() ? maxMobile : maxDesktop
+});
+
+// ---------- LIVE PRICE (CoinGecko) ----------
+const CHZ_DATA = {"7d":[[1776855621692,0.04735],[1776859218590,0.04738],[1776862871165,0.04676],[1776866451673,0.04663],[1776870080642,0.04675],[1776873655050,0.04612],[1776877231377,0.04616],[1776880829097,0.04719],[1776884468202,0.04698],[1776888008887,0.04669],[1776891600706,0.04685],[1776895258769,0.0476],[1776898841098,0.04734],[1776902408454,0.04711],[1776906067675,0.04705],[1776909610865,0.04745],[1776913206911,0.04693],[1776916854808,0.04658],[1776920456128,0.04735],[1776924056426,0.04815],[1776927657198,0.04784],[1776931208217,0.04728],[1776934808536,0.04726],[1776938469782,0.04668],[1776942038056,0.04618],[1776945656618,0.04676],[1776949226696,0.04717],[1776952867669,0.04729],[1776956473176,0.04776],[1776960053289,0.04803],[1776963663834,0.04745],[1776967209746,0.0467],[1776970832780,0.04708],[1776974452803,0.04768],[1776978035186,0.04845],[1776981672453,0.04829],[1776985251823,0.04948],[1776988880144,0.0502],[1776992466809,0.05145],[1776996050748,0.05053],[1776999667277,0.05],[1777003241308,0.04892],[1777006822047,0.04844],[1777010431265,0.0487],[1777014027725,0.04831],[1777017648307,0.04796],[1777021236763,0.04833],[1777024864538,0.0478],[1777028439587,0.0478],[1777032012811,0.04809],[1777035631638,0.04822],[1777039251395,0.04819],[1777042811416,0.04852],[1777046428383,0.04908],[1777050042693,0.04832],[1777053675760,0.04801],[1777057220498,0.0481],[1777060829723,0.04799],[1777064406453,0.04815],[1777068021210,0.04817],[1777071608629,0.04809],[1777075268044,0.04827],[1777078822832,0.04831],[1777082448446,0.04833],[1777086027272,0.04792],[1777089626648,0.0481],[1777093261309,0.04839],[1777096863731,0.04818],[1777100462886,0.04921],[1777104063189,0.04959],[1777107607468,0.04999],[1777111219191,0.04968],[1777114818559,0.04999],[1777118469533,0.04918],[1777122070380,0.04917],[1777125673888,0.04953],[1777129201802,0.04966],[1777132808400,0.0494],[1777136425149,0.049],[1777140066932,0.04877],[1777143634148,0.049],[1777147261835,0.04875],[1777150821067,0.04898],[1777154418784,0.04919],[1777158036815,0.04945],[1777161615397,0.04981],[1777165254418,0.04929],[1777168813611,0.04916],[1777172458204,0.04952],[1777176009193,0.04934],[1777179675565,0.04947],[1777183210617,0.04999],[1777186818023,0.05029],[1777190406625,0.04975],[1777194044407,0.0494],[1777197621344,0.04948],[1777201221074,0.04951],[1777204865379,0.0499],[1777208440294,0.05004],[1777212007119,0.05019],[1777215647390,0.05072],[1777219230079,0.05145],[1777222810119,0.05023],[1777226469189,0.05052],[1777230004375,0.05014],[1777233623424,0.05031],[1777237217749,0.05057],[1777240813709,0.05021],[1777244411449,0.05014],[1777248075222,0.04999],[1777251642650,0.04994],[1777255270984,0.05016],[1777258869886,0.05002],[1777262409032,0.05005],[1777266038537,0.04969],[1777269629283,0.04831],[1777273226379,0.04852],[1777276826654,0.04883],[1777280446722,0.04912],[1777284002538,0.05102],[1777287604792,0.0502],[1777291271889,0.05009],[1777294872748,0.04903],[1777298471527,0.0491],[1777302061099,0.04941],[1777305638772,0.04839],[1777309237581,0.04868],[1777312823704,0.04913],[1777316452004,0.049],[1777320016522,0.04888],[1777323634717,0.04928],[1777327209148,0.04946],[1777330866375,0.04984],[1777334463797,0.05015],[1777338040055,0.05037],[1777341631112,0.05027],[1777345257972,0.0494],[1777348856550,0.04966],[1777352453310,0.04918],[1777356038853,0.04896],[1777359636724,0.04899],[1777363264054,0.04951],[1777366841234,0.0489],[1777370412048,0.04815],[1777374018492,0.04751],[1777377603569,0.04653],[1777381233142,0.04628],[1777384820751,0.04604],[1777388423575,0.04579],[1777392056082,0.04604],[1777395634111,0.04584],[1777399207971,0.04524],[1777402843470,0.04547],[1777406441538,0.04546],[1777410073947,0.04555],[1777413643989,0.04546],[1777417229113,0.04546],[1777420875424,0.04552],[1777424405666,0.04636],[1777428041018,0.04631],[1777431657472,0.04667],[1777435240192,0.04706],[1777438848569,0.04712],[1777442447314,0.04677],[1777446046532,0.04622],[1777449618427,0.04604],[1777453223122,0.04585],[1777456822072,0.04598],[1777456993000,0.04602]],"30d":[[1774864956304,0.04327],[1774886582102,0.04289],[1774908158084,0.04318],[1774929628171,0.043],[1774951369923,0.04297],[1774972945097,0.04243],[1774994615138,0.04206],[1775016010189,0.04135],[1775037620488,0.04147],[1775059314040,0.04139],[1775080972880,0.04166],[1775102593687,0.04026],[1775124100798,0.04008],[1775145854889,0.03954],[1775167251398,0.03866],[1775188838078,0.03893],[1775210585571,0.03958],[1775232156584,0.03954],[1775253846132,0.03952],[1775276809055,0.03896],[1775299990770,0.03887],[1775318476306,0.03901],[1775340122301,0.03894],[1775361739386,0.03927],[1775383406424,0.0381],[1775405070045,0.03841],[1775426560939,0.03828],[1775448062212,0.03947],[1775469774573,0.03909],[1775491385799,0.0392],[1775512983164,0.03818],[1775534555221,0.0374],[1775556104563,0.03765],[1775577733285,0.03737],[1775599273698,0.03851],[1775621004101,0.03893],[1775642442969,0.03883],[1775664156162,0.03836],[1775685784775,0.03804],[1775707341275,0.0383],[1775728944519,0.03908],[1775750575770,0.03926],[1775772179203,0.03906],[1775793818928,0.03948],[1775815373740,0.0395],[1775836920012,0.03895],[1775860410323,0.03963],[1775881180481,0.03967],[1775904934832,0.03925],[1775921929516,0.03912],[1775942370744,0.03952],[1775958656797,0.03826],[1775966474742,0.03802],[1775988065488,0.03782],[1776009675254,0.03726],[1776031232474,0.03671],[1776052847908,0.03615],[1776074423167,0.03608],[1776096013693,0.03649],[1776117602851,0.03684],[1776139270315,0.03627],[1776160826111,0.03683],[1776182476595,0.03719],[1776204018181,0.03671],[1776225642936,0.03675],[1776247246044,0.0372],[1776268878921,0.04103],[1776290412772,0.04176],[1776312014203,0.04251],[1776333658012,0.04312],[1776355266831,0.04311],[1776376815113,0.04235],[1776398453770,0.0415],[1776420071421,0.04128],[1776441668146,0.04142],[1776463207202,0.04143],[1776484806113,0.04217],[1776506426225,0.04147],[1776528075254,0.04089],[1776549612117,0.0406],[1776571208207,0.04086],[1776592819260,0.04033],[1776614438366,0.04068],[1776636030416,0.04157],[1776657653149,0.04386],[1776679236855,0.04343],[1776700839381,0.04463],[1776722443170,0.04766],[1776744019749,0.04613],[1776765654778,0.04616],[1776787207563,0.04826],[1776808826868,0.04707],[1776830438333,0.0476],[1776852048327,0.0474],[1776873655050,0.04612],[1776895258769,0.0476],[1776916854808,0.04658],[1776938469782,0.04668],[1776960053289,0.04803],[1776981672453,0.04829],[1777003241308,0.04892],[1777024864538,0.0478],[1777046428383,0.04908],[1777068021210,0.04817],[1777089626648,0.0481],[1777111219191,0.04968],[1777132808400,0.0494],[1777154418784,0.04919],[1777176009193,0.04934],[1777197621344,0.04948],[1777219230079,0.05145],[1777240813709,0.05021],[1777262409032,0.05005],[1777284002538,0.05102],[1777305638772,0.04839],[1777327209148,0.04946],[1777348856550,0.04966],[1777370412048,0.04815],[1777392056082,0.04604],[1777413643989,0.04546],[1777435240192,0.04706],[1777456993000,0.04602]],"180d":[[1761955200000,0.03085],[1762041600000,0.03146],[1762128000000,0.03193],[1762214400000,0.02878],[1762300800000,0.0281],[1762387200000,0.02928],[1762473600000,0.02965],[1762560000000,0.03444],[1762646400000,0.0342],[1762732800000,0.03391],[1762819200000,0.03427],[1762905600000,0.0327],[1762992000000,0.03239],[1763078400000,0.03172],[1763164800000,0.03107],[1763251200000,0.03145],[1763337600000,0.03064],[1763424000000,0.03],[1763510400000,0.03085],[1763596800000,0.02972],[1763683200000,0.02856],[1763769600000,0.02784],[1763856000000,0.0279],[1763942400000,0.02778],[1764028800000,0.02881],[1764115200000,0.02923],[1764201600000,0.02921],[1764288000000,0.02942],[1764374400000,0.03055],[1764460800000,0.03069],[1764547200000,0.03026],[1764633600000,0.02873],[1764720000000,0.03021],[1764806400000,0.03103],[1764892800000,0.0302],[1764979200000,0.02958],[1765065600000,0.03183],[1765152000000,0.03076],[1765238400000,0.03166],[1765324800000,0.03308],[1765411200000,0.03229],[1765497600000,0.03312],[1765584000000,0.03356],[1765670400000,0.03359],[1765756800000,0.03211],[1765843200000,0.03069],[1765929600000,0.0304],[1766016000000,0.02911],[1766102400000,0.02874],[1766188800000,0.03589],[1766275200000,0.03683],[1766361600000,0.03622],[1766448000000,0.03594],[1766534400000,0.03454],[1766620800000,0.03492],[1766707200000,0.03391],[1766793600000,0.03622],[1766880000000,0.03642],[1766966400000,0.03616],[1767052800000,0.0369],[1767139200000,0.03967],[1767225600000,0.04243],[1767312000000,0.04123],[1767398400000,0.04382],[1767484800000,0.0455],[1767571200000,0.04468],[1767657600000,0.04571],[1767744000000,0.04408],[1767830400000,0.04332],[1767916800000,0.04442],[1768003200000,0.04471],[1768089600000,0.0504],[1768176000000,0.04862],[1768262400000,0.05047],[1768348800000,0.05367],[1768435200000,0.05579],[1768521600000,0.05829],[1768608000000,0.05781],[1768694400000,0.06188],[1768780800000,0.06002],[1768867200000,0.05751],[1768953600000,0.0514],[1769040000000,0.05077],[1769126400000,0.05061],[1769212800000,0.05059],[1769299200000,0.0521],[1769385600000,0.04961],[1769472000000,0.05452],[1769558400000,0.05775],[1769644800000,0.05619],[1769731200000,0.04723],[1769817600000,0.04928],[1769904000000,0.04432],[1769990400000,0.04613],[1770076800000,0.04622],[1770163200000,0.04396],[1770249600000,0.04441],[1770336000000,0.03828],[1770422400000,0.04172],[1770508800000,0.04305],[1770595200000,0.04135],[1770681600000,0.04013],[1770768000000,0.0397],[1770854400000,0.03875],[1770940800000,0.04001],[1771027200000,0.04192],[1771113600000,0.04296],[1771200000000,0.04009],[1771286400000,0.04171],[1771372800000,0.04061],[1771459200000,0.03947],[1771545600000,0.0385],[1771632000000,0.03554],[1771718400000,0.03588],[1771804800000,0.03481],[1771891200000,0.03387],[1771977600000,0.0333],[1772064000000,0.03519],[1772150400000,0.03217],[1772236800000,0.03375],[1772323200000,0.03464],[1772409600000,0.03323],[1772496000000,0.03453],[1772582400000,0.03677],[1772668800000,0.03741],[1772755200000,0.03705],[1772841600000,0.03646],[1772928000000,0.03437],[1773014400000,0.03601],[1773100800000,0.03843],[1773187200000,0.0382],[1773273600000,0.03848],[1773360000000,0.03736],[1773446400000,0.03804],[1773532800000,0.03838],[1773619200000,0.03768],[1773705600000,0.03987],[1773792000000,0.03884],[1773878400000,0.03637],[1773964800000,0.03592],[1774051200000,0.03609],[1774137600000,0.03558],[1774224000000,0.03466],[1774310400000,0.03582],[1774396800000,0.03596],[1774483200000,0.03597],[1774569600000,0.03524],[1774656000000,0.03554],[1774742400000,0.04017],[1774828800000,0.04012],[1774915200000,0.04253],[1775001600000,0.04221],[1775088000000,0.04107],[1775174400000,0.03879],[1775260800000,0.03956],[1775347200000,0.03913],[1775433600000,0.03875],[1775520000000,0.0375],[1775606400000,0.03985],[1775692800000,0.0377],[1775779200000,0.03888],[1775865600000,0.03958],[1775952000000,0.03938],[1776038400000,0.03593],[1776124800000,0.03721],[1776211200000,0.03657],[1776297600000,0.04188],[1776384000000,0.0429],[1776470400000,0.04152],[1776556800000,0.04052],[1776643200000,0.04038],[1776729600000,0.04666],[1776816000000,0.04783],[1776902400000,0.04711],[1776988800000,0.05021],[1777075200000,0.04825],[1777161600000,0.04981],[1777248000000,0.04999],[1777334400000,0.05026],[1777420800000,0.04554],[1777456993000,0.04602]],"max":[[1714435200000,0.1132],[1714694400000,0.11793],[1714953600000,0.12158],[1715212800000,0.1222],[1715472000000,0.12225],[1715731200000,0.11181],[1715990400000,0.12113],[1716249600000,0.12443],[1716508800000,0.11688],[1716768000000,0.13414],[1717027200000,0.15421],[1717286400000,0.15113],[1717545600000,0.14506],[1717804800000,0.12466],[1718064000000,0.12575],[1718323200000,0.11242],[1718582400000,0.10083],[1718841600000,0.07988],[1719100800000,0.07745],[1719360000000,0.07916],[1719619200000,0.07515],[1719878400000,0.07479],[1720137600000,0.06264],[1720396800000,0.0632],[1720656000000,0.06651],[1720915200000,0.06802],[1721174400000,0.07322],[1721433600000,0.07387],[1721692800000,0.07169],[1721952000000,0.06689],[1722211200000,0.06836],[1722470400000,0.06475],[1722729600000,0.05743],[1722988800000,0.05262],[1723248000000,0.0556],[1723507200000,0.05568],[1723766400000,0.05302],[1724025600000,0.05363],[1724284800000,0.05703],[1724544000000,0.06231],[1724803200000,0.05459],[1725062400000,0.05427],[1725321600000,0.05244],[1725580800000,0.04979],[1725840000000,0.0518],[1726099200000,0.05212],[1726358400000,0.05368],[1726617600000,0.05202],[1726876800000,0.05706],[1727136000000,0.06107],[1727395200000,0.06922],[1727654400000,0.06899],[1727913600000,0.0591],[1728172800000,0.06237],[1728432000000,0.06575],[1728691200000,0.06992],[1728950400000,0.07675],[1729209600000,0.07565],[1729468800000,0.07425],[1729728000000,0.06898],[1729987200000,0.0618],[1730246400000,0.06339],[1730505600000,0.05884],[1730764800000,0.05428],[1731024000000,0.06251],[1731283200000,0.06677],[1731542400000,0.06477],[1731801600000,0.07484],[1732060800000,0.07605],[1732320000000,0.07861],[1732579200000,0.09078],[1732838400000,0.09427],[1733097600000,0.10639],[1733356800000,0.13132],[1733616000000,0.12933],[1733875200000,0.10211],[1734134400000,0.1165],[1734393600000,0.10878],[1734652800000,0.08667],[1734912000000,0.08417],[1735171200000,0.09213],[1735430400000,0.08871],[1735689600000,0.08194],[1735948800000,0.09303],[1736208000000,0.0951],[1736467200000,0.0824],[1736726400000,0.08098],[1736985600000,0.08718],[1737244800000,0.08335],[1737504000000,0.07796],[1737763200000,0.07297],[1738022400000,0.06971],[1738281600000,0.07249],[1738540800000,0.05757],[1738800000000,0.05645],[1739059200000,0.05803],[1739318400000,0.05811],[1739577600000,0.06187],[1739836800000,0.06009],[1740096000000,0.05435],[1740355200000,0.05218],[1740614400000,0.05025],[1740873600000,0.05018],[1741132800000,0.0478],[1741392000000,0.04884],[1741651200000,0.04113],[1741910400000,0.04256],[1742169600000,0.04402],[1742428800000,0.04678],[1742688000000,0.04567],[1742947200000,0.0483],[1743206400000,0.04357],[1743465600000,0.04208],[1743724800000,0.04098],[1743984000000,0.0378],[1744243200000,0.03918],[1744502400000,0.04017],[1744761600000,0.03604],[1745020800000,0.0366],[1745280000000,0.03733],[1745539200000,0.04148],[1745798400000,0.04105],[1746057600000,0.04117],[1746316800000,0.04043],[1746576000000,0.0389],[1746835200000,0.04616],[1747094400000,0.04865],[1747353600000,0.04455],[1747612800000,0.04469],[1747872000000,0.04546],[1748131200000,0.04343],[1748390400000,0.04401],[1748649600000,0.03826],[1748908800000,0.04027],[1749168000000,0.0368],[1749427200000,0.03813],[1749686400000,0.03934],[1749945600000,0.03637],[1750204800000,0.03535],[1750464000000,0.03431],[1750723200000,0.03513],[1750982400000,0.03405],[1751241600000,0.03662],[1751500800000,0.03647],[1751760000000,0.03506],[1752019200000,0.03583],[1752278400000,0.03989],[1752537600000,0.04032],[1752796800000,0.04275],[1753056000000,0.04553],[1753315200000,0.04216],[1753574400000,0.04257],[1753833600000,0.04116],[1754092800000,0.03783],[1754352000000,0.03996],[1754611200000,0.04082],[1754870400000,0.04303],[1755129600000,0.04446],[1755388800000,0.04172],[1755648000000,0.03873],[1755907200000,0.04247],[1756166400000,0.03829],[1756425600000,0.04095],[1756684800000,0.03995],[1756944000000,0.03973],[1757203200000,0.03907],[1757462400000,0.04224],[1757721600000,0.04347],[1757980800000,0.04075],[1758240000000,0.04366],[1758499200000,0.04203],[1758758400000,0.03981],[1759017600000,0.03893],[1759276800000,0.0403],[1759536000000,0.04543],[1759795200000,0.04429],[1760054400000,0.04137],[1760313600000,0.03506],[1760572800000,0.03436],[1760832000000,0.03262],[1761091200000,0.03206],[1761350400000,0.03255],[1761609600000,0.03268],[1761868800000,0.03059],[1762128000000,0.03193],[1762387200000,0.02928],[1762646400000,0.0342],[1762905600000,0.0327],[1763164800000,0.03107],[1763424000000,0.03],[1763683200000,0.02856],[1763942400000,0.02778],[1764201600000,0.02921],[1764460800000,0.03069],[1764720000000,0.03021],[1764979200000,0.02958],[1765238400000,0.03166],[1765497600000,0.03312],[1765756800000,0.03211],[1766016000000,0.02911],[1766275200000,0.03683],[1766534400000,0.03454],[1766793600000,0.03622],[1767052800000,0.0369],[1767312000000,0.04123],[1767571200000,0.04468],[1767830400000,0.04332],[1768089600000,0.0504],[1768348800000,0.05367],[1768608000000,0.05781],[1768867200000,0.05751],[1769126400000,0.05061],[1769385600000,0.04961],[1769644800000,0.05619],[1769904000000,0.04432],[1770163200000,0.04396],[1770422400000,0.04172],[1770681600000,0.04013],[1770940800000,0.04001],[1771200000000,0.04009],[1771459200000,0.03947],[1771718400000,0.03588],[1771977600000,0.0333],[1772236800000,0.03375],[1772496000000,0.03453],[1772755200000,0.03705],[1773014400000,0.03601],[1773273600000,0.03848],[1773532800000,0.03838],[1773792000000,0.03884],[1774051200000,0.03609],[1774310400000,0.03582],[1774569600000,0.03524],[1774828800000,0.04012],[1775088000000,0.04107],[1775347200000,0.03913],[1775606400000,0.03985],[1775865600000,0.03958],[1776124800000,0.03721],[1776384000000,0.0429],[1776643200000,0.04038],[1776902400000,0.04711],[1777161600000,0.04981],[1777420800000,0.04554],[1777457006000,0.04602]]};
+
+const RANGE_LABEL = { '7d': '7D', '30d': '30D', '180d': '180D', 'max': 'all time' };
+
+function fmtTickDate(ts, range) {
+  const d = new Date(ts);
+  const m = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  const yr = String(d.getFullYear()).slice(2);
+  if (range === '7d') {
+    return m + ' ' + day + ' ' + String(d.getHours()).padStart(2, '0') + ':00';
+  }
+  if (range === '30d' || range === '180d') return m + ' ' + day;
+  return m + " '" + yr;
+}
+function fmtFullDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function tryRefreshLive(range) {
+  const days = range === 'max' ? 730 : range.replace('d', '');
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/coins/chiliz/market_chart?vs_currency=usd&days=' + days, { mode: 'cors' });
+    if (!r.ok) return false;
+    const j = await r.json();
+    if (j.prices && j.prices.length > 5) {
+      const sample = j.prices.length > 250 ? j.prices.filter((_, i) => i % Math.ceil(j.prices.length / 250) === 0).concat([j.prices[j.prices.length - 1]]) : j.prices;
+      CHZ_DATA[range] = sample.map(p => [p[0], +Number(p[1]).toFixed(5)]);
+      return true;
+    }
+  } catch (e) { return false; }
+  return false;
+}
+
+// Key event timestamps (UTC ms). Will be drawn on live chart when in range.
+const LIVE_EVENTS = [
+  { ts: Date.UTC(2026, 1, 9),  short: 'ANNOUNCED',  color: '#CD0124', y: 12 },
+  { ts: Date.UTC(2026, 3, 10), short: 'BURN REPORT', color: '#CD0124', y: 36 }
+];
+
+function findNearestIdx(pts, ts) {
+  if (!pts.length) return -1;
+  if (ts < pts[0][0] - 86400000 || ts > pts[pts.length - 1][0] + 86400000) return -1;
+  let best = -1, bestDiff = Infinity;
+  for (let i = 0; i < pts.length; i++) {
+    const d = Math.abs(pts[i][0] - ts);
+    if (d < bestDiff) { bestDiff = d; best = i; }
+  }
+  return best;
+}
+
+chartConfigs.livePrice = {
+  build(mode) {
+    const pts = CHZ_DATA[mode] || CHZ_DATA['30d'];
+    const labels = pts.map(p => fmtTickDate(p[0], mode));
+    const fullLabels = pts.map(p => fmtFullDate(p[0]));
+    const data = pts.map(p => p[1]);
+    const start = data[0], end = data[data.length - 1];
+    const pct = ((end - start) / start) * 100;
+    const isUp = pct >= 0;
+    const color = isUp ? GREEN : RED;
+    const fillColor = isUp ? 'rgba(14,142,90,0.10)' : 'rgba(205,1,36,0.10)';
+
+    // Compute event markers that fall inside the current range
+    const events = LIVE_EVENTS
+      .map(ev => {
+        const idx = findNearestIdx(pts, ev.ts);
+        return idx >= 0 ? { idx, short: ev.short, color: ev.color, y: ev.y } : null;
+      })
+      .filter(Boolean);
+
+    // Update header readout
+    const priceEl = document.getElementById('chzLivePrice');
+    const changeEl = document.getElementById('chzLiveChange');
+    const metaEl = document.getElementById('chzLiveMeta');
+    if (priceEl) priceEl.textContent = '$' + end.toFixed(4);
+    if (changeEl) {
+      changeEl.textContent = (isUp ? '+' : '') + pct.toFixed(1) + '%';
+      changeEl.className = 'live-change ' + (isUp ? 'pos' : 'neg');
+    }
+    if (metaEl) metaEl.textContent = 'over ' + RANGE_LABEL[mode];
+
+    return {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data, borderColor: color, backgroundColor: fillColor,
+          fill: true, tension: 0.2, pointRadius: 0, pointHoverRadius: 4,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: events.length ? 60 : 8 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: items => fullLabels[items[0].dataIndex],
+              label: c => '$' + c.parsed.y.toFixed(4)
+            }
+          },
+          eventLines: { events }
+        },
+        scales: {
+          x: { grid: noGrid, ticks: { ...tickStyle(), autoSkip: true, maxTicksLimit: isMobile() ? 5 : 7, maxRotation: 0, font: { size: isMobile() ? 9 : 10 } } },
+          y: { grid: baseGrid, ticks: { ...tickStyle(), callback: v => '$' + v.toFixed(v < 0.05 ? 4 : 3), maxTicksLimit: isMobile() ? 6 : 8 } }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 01 CUMULATIVE BURN ----------
+const cumLabels = ['Jan', 'Feb', 'Mar (T2.0)', 'Apr'];
+const cumChz = [0.4, 0.7, 8.6, 17.8]; // M CHZ cumulative
+chartConfigs.cumBurn = {
+  build(mode) {
+    const data = mode === 'usd' ? cumChz.map(v => +(v * PRICE).toFixed(3)) : cumChz;
+    const fmt = mode === 'usd' ? fmtMoney : fmtChz;
+    return {
+      type: 'line',
+      data: {
+        labels: cumLabels,
+        datasets: [{
+          data, borderColor: RED, backgroundColor: 'rgba(205,1,36,0.10)',
+          fill: true, tension: 0.25, pointBackgroundColor: RED, pointRadius: 5, borderWidth: 2.5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.y) } } },
+        scales: { x: { grid: noGrid, ticks: tickStyle() }, y: { grid: baseGrid, ticks: { ...tickStyle(), callback: fmt } } }
+      }
+    };
+  }
+};
+
+// ---------- 02 MONTHLY VOLUME ----------
+const monLabels = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const monChz = [0.18, 0.22, 0.41, 0.31, 7.9, 9.2];
+chartConfigs.monthly = {
+  build(mode) {
+    const data = mode === 'usd' ? monChz.map(v => +(v * PRICE).toFixed(3)) : monChz;
+    const fmt = mode === 'usd' ? fmtMoney : fmtChz;
+    return {
+      type: 'bar',
+      data: {
+        labels: monLabels,
+        datasets: [{
+          data,
+          backgroundColor: ['#9CA3AF', '#9CA3AF', '#9CA3AF', '#9CA3AF', RED, RED],
+          borderRadius: 2, borderSkipped: false, barPercentage: 0.7
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.y) } } },
+        scales: { x: { grid: noGrid, ticks: tickStyle() }, y: { grid: baseGrid, ticks: { ...tickStyle(), callback: fmt } } }
+      }
+    };
+  }
+};
+
+// ---------- 04 INFLATION SCHEDULE ----------
+const yrs14 = []; for (let i = 0; i <= 14; i++) yrs14.push(String(2026 + i));
+const startInf = 8.8, endInf = 1.88;
+const infPct = yrs14.map((_, i) => +(endInf + (startInf - endInf) * Math.pow(1 - i / 14, 1.6)).toFixed(2));
+// Approximate annual issuance in M CHZ assuming compounding supply
+let supply = 10330;
+const infChz = infPct.map(rate => {
+  const issued = supply * rate / 100;
+  supply += issued;
+  return +issued.toFixed(0);
+});
+chartConfigs.inflation = {
+  build(mode) {
+    const data = mode === 'pct' ? infPct : infChz;
+    const fmt = mode === 'pct' ? (v => v + '%') : (v => v + 'M');
+    const flat = mode === 'pct' ? yrs14.map(() => 1.88) : null;
+    const datasets = [{
+      data, borderColor: RED, backgroundColor: 'rgba(205,1,36,0.08)',
+      fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2.5
+    }];
+    if (flat) datasets.push({
+      data: flat, borderColor: GREEN, borderDash: [5, 4], pointRadius: 0, borderWidth: 1.5, fill: false
+    });
+    return {
+      type: 'line',
+      data: { labels: yrs14, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.y) } } },
+        scales: {
+          x: { grid: noGrid, ticks: xTicks(8, 5) },
+          y: { grid: baseGrid, ticks: { ...tickStyle(), callback: fmt, maxTicksLimit: isMobile() ? 5 : 7 } }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 05 NET SUPPLY ----------
+const yrLabels = ['2026', '2027', '2028', '2029', '2030', '2031', '2032'];
+const issuanceChz = [880, 760, 640, 540, 460, 390, 340];
+const burnsChz = [180, 320, 480, 560, 620, 680, 720];
+chartConfigs.netSupply = {
+  build(mode) {
+    const isUsd = mode === 'usd';
+    const issuance = isUsd ? issuanceChz.map(v => +(v * PRICE).toFixed(1)) : issuanceChz;
+    const burns = isUsd ? burnsChz.map(v => +(v * PRICE).toFixed(1)) : burnsChz;
+    const fmt = isUsd ? (v => '$' + v + 'M') : (v => v + 'M');
+    return {
+      type: 'line',
+      data: {
+        labels: yrLabels,
+        datasets: [
+          {
+            label: 'Issuance', data: issuance,
+            borderColor: GREY, backgroundColor: 'rgba(107,114,128,0.10)',
+            fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2
+          },
+          {
+            label: 'Burns (est.)', data: burns,
+            borderColor: RED, backgroundColor: 'rgba(205,1,36,0.10)',
+            fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2.5
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 10 } },
+          tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.parsed.y) } }
+        },
+        scales: {
+          x: { grid: noGrid, ticks: xTicks(7, 5) },
+          y: { grid: baseGrid, ticks: { ...tickStyle(), callback: fmt, maxTicksLimit: isMobile() ? 5 : 6 } }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 07 PRICE × BURNS (Sep 2025 to Apr 2026 timeline with event markers) ----------
+const pbLabels = ['Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'];
+const pbBurnsChz = [0.14, 0.16, 0.18, 0.22, 0.41, 0.31, 7.90, 9.20];
+const pbPrice    = [0.036, 0.039, 0.040, 0.041, 0.041, 0.043, 0.046, 0.049];
+
+// Event markers (idx into labels array)
+const pbEvents = [
+  { idx: 5, label: 'BUYBACK PROGRAM ANNOUNCED',   short: 'ANNOUNCED', color: '#CD0124', y: 12 },
+  { idx: 6, label: 'FIRST BURN PERIOD',           short: 'FIRST BURN', color: '#CD0124', y: 12 },
+  { idx: 7, label: 'BURN REPORT PUBLISHED',       short: 'REPORT',  color: '#0E8E5A', y: 36 }
+];
+
+// Plugin: vertical event lines + label pills
+const eventPlugin = {
+  id: 'eventLines',
+  afterDatasetsDraw(chart) {
+    const events = chart.options.plugins.eventLines?.events || [];
+    const { ctx, chartArea, scales } = chart;
+    if (!events.length) return;
+    events.forEach(ev => {
+      const x = scales.x.getPixelForValue(ev.idx);
+      // dashed vertical line
+      ctx.save();
+      ctx.strokeStyle = ev.color;
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top + 4);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // label pill
+      ctx.font = 'bold 9px Arial';
+      const txt = ev.short;
+      const padX = 7;
+      const w = ctx.measureText(txt).width + padX * 2;
+      const h = 16;
+      let labelX = x;
+      // clamp within chart area
+      const minX = chartArea.left + w/2 + 2;
+      const maxX = chartArea.right - w/2 - 2;
+      if (labelX < minX) labelX = minX;
+      if (labelX > maxX) labelX = maxX;
+      const yTop = chartArea.top + ev.y;
+      ctx.fillStyle = ev.color;
+      ctx.beginPath();
+      const r = 8;
+      ctx.moveTo(labelX - w/2 + r, yTop);
+      ctx.arcTo(labelX + w/2, yTop, labelX + w/2, yTop + h, r);
+      ctx.arcTo(labelX + w/2, yTop + h, labelX - w/2, yTop + h, r);
+      ctx.arcTo(labelX - w/2, yTop + h, labelX - w/2, yTop, r);
+      ctx.arcTo(labelX - w/2, yTop, labelX + w/2, yTop, r);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(txt, labelX, yTop + h/2 + 0.5);
+      ctx.restore();
+    });
+  }
+};
+Chart.register(eventPlugin);
+
+chartConfigs.priceBurn = {
+  build(mode) {
+    const isUsd = mode === 'usd';
+    const burnData = isUsd ? pbBurnsChz.map(v => +(v * PRICE).toFixed(3)) : pbBurnsChz;
+    const burnFmt = isUsd ? fmtMoney : fmtChz;
+    return {
+      type: 'bar',
+      data: {
+        labels: pbLabels,
+        datasets: [
+          {
+            type: 'bar', label: isUsd ? 'Monthly Burn (USD)' : 'Monthly Burn (CHZ)',
+            data: burnData,
+            backgroundColor: pbBurnsChz.map((_, i) => i >= 6 ? RED : (i === 5 ? 'rgba(205,1,36,0.55)' : '#9CA3AF')),
+            yAxisID: 'y', borderRadius: 2, barPercentage: 0.7, categoryPercentage: 0.85
+          },
+          {
+            type: 'line', label: 'CHZ Price (USD)', data: pbPrice,
+            borderColor: INK, backgroundColor: INK, tension: 0.35,
+            pointRadius: 3, pointHoverRadius: 5, borderWidth: 2.5,
+            yAxisID: 'y1', fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
+        layout: { padding: { top: 60 } },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 12 } },
+          tooltip: {
+            callbacks: { label: c => c.dataset.label + ': ' + (c.dataset.yAxisID === 'y1' ? '$' + c.parsed.y.toFixed(3) : burnFmt(c.parsed.y)) }
+          },
+          eventLines: { events: pbEvents }
+        },
+        scales: {
+          x: { grid: noGrid, ticks: { ...tickStyle(), autoSkip: isMobile(), maxTicksLimit: isMobile() ? 5 : 8, maxRotation: 0, font: { size: isMobile() ? 9 : 10 } } },
+          y: {
+            position: 'left', grid: baseGrid,
+            ticks: { ...tickStyle(), callback: burnFmt },
+            title: { display: true, text: isUsd ? 'Monthly Burn (USD)' : 'Monthly Burn (M CHZ)', color: GREY, font: { size: 11, weight: '700' } }
+          },
+          y1: {
+            position: 'right', grid: noGrid,
+            ticks: { ...tickStyle(), callback: v => '$' + v.toFixed(3) },
+            title: { display: true, text: 'CHZ Price (USD)', color: GREY, font: { size: 11, weight: '700' } }
+          }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 04 STAKE COMPRESSION (on-chain) ----------
+// Snapshots from system contract 0x0000...1000 balance, weekly Oct 2025 to Apr 2026
+const STAKE_SNAPSHOTS = [[1761926878166,2598824852],[1763136478435,2600829594],[1764346078713,2690749047],[1765555679035,2678802297],[1766765279391,2608098979],[1767974879650,2605637586],[1769184479906,2502120521],[1769702869117,2506797894],[1769962069462,2484544558],[1770221269716,2485926133],[1770480469978,2489730757],[1770739670240,2463078025],[1770998870622,2474267918],[1771258070883,2476720148],[1771517271206,2482697064],[1771776471468,2248093829],[1772035671814,2441029478],[1772294872083,2435673011],[1772554072351,2433576400],[1772813272614,2299409311],[1773072472877,2311918920],[1773331673135,2448539979],[1773590873397,2446961192],[1773850073741,2461590735],[1774109274007,2465769921],[1774368474272,2330324184],[1774627674536,2438388025],[1774886874794,2427159664],[1775146075055,2433419952],[1775405275403,2417137207],[1775664475750,2424274597],[1775923676098,2432834492],[1776182876558,2436486437],[1776442076817,2432159384],[1776701277121,2426402220],[1776960477380,2435599239],[1777219677652,2424927270],[1777478877912,2420974207]];
+
+const STAKE_EVENTS = [
+  { ts: Date.UTC(2026, 1, 9),  short: 'ANNOUNCED',  color: '#CD0124', y: 12 },
+  { ts: Date.UTC(2026, 3, 10), short: 'BURN REPORT', color: '#CD0124', y: 36 }
+];
+
+chartConfigs.stake = {
+  build() {
+    const pts = STAKE_SNAPSHOTS;
+    const labels = pts.map(p => {
+      const d = new Date(p[0]);
+      return d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getDate();
+    });
+    const fullLabels = pts.map(p => {
+      const d = new Date(p[0]);
+      return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    });
+    const data = pts.map(p => p[1] / 1e9); // billions
+
+    const events = STAKE_EVENTS
+      .map(ev => {
+        const idx = findNearestIdx(pts, ev.ts);
+        return idx >= 0 ? { idx, short: ev.short, color: ev.color, y: ev.y } : null;
+      })
+      .filter(Boolean);
+
+    return {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Total CHZ staked',
+          data,
+          borderColor: RED, backgroundColor: 'rgba(205,1,36,0.10)',
+          fill: true, tension: 0.25, pointRadius: 0, pointHoverRadius: 5, borderWidth: 2.5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: events.length ? 60 : 8 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: items => fullLabels[items[0].dataIndex],
+              label: c => c.parsed.y.toFixed(3) + 'B CHZ staked'
+            }
+          },
+          eventLines: { events }
+        },
+        scales: {
+          x: { grid: noGrid, ticks: { ...tickStyle(), autoSkip: true, maxTicksLimit: isMobile() ? 5 : 8, maxRotation: 0, font: { size: isMobile() ? 9 : 10 } } },
+          y: {
+            grid: baseGrid,
+            ticks: { ...tickStyle(), callback: v => v.toFixed(2) + 'B', maxTicksLimit: isMobile() ? 5 : 6 },
+            title: { display: true, text: 'CHZ staked (billions)', color: GREY, font: { size: 11, weight: '700' } }
+          }
+        }
+      }
+    };
+  }
+};
+
+// ---------- Render + Toggle ----------
+function render(key, mode) {
+  if (chartRefs[key]) chartRefs[key].destroy();
+  const cfg = chartConfigs[key].build(mode);
+  chartRefs[key] = new Chart(document.getElementById(key), cfg);
+}
+
+// Initial render
+const DEFAULT_MODES = { livePrice: '180d' };
+Object.keys(chartConfigs).forEach(key => {
+  const t = document.querySelector(`.toggle[data-chart="${key}"]`);
+  const initialMode = t ? t.querySelector('button.active').dataset.mode : (DEFAULT_MODES[key] || 'chz');
+  render(key, initialMode);
+});
+
+// Wire toggles
+document.querySelectorAll('.toggle').forEach(t => {
+  t.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    t.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const key = t.dataset.chart;
+    const mode = btn.dataset.mode;
+    render(key, mode);
+    // Background live refresh for price chart
+    if (key === 'livePrice') {
+      const ok = await tryRefreshLive(mode);
+      if (ok) render(key, mode);
+    }
+  });
+});
+
+// Background refresh for the default-loaded live price view
+(async () => {
+  const ok = await tryRefreshLive('180d');
+  if (ok) render('livePrice', '180d');
+})();
+
+// Re-render charts when crossing the mobile breakpoint (rotation, resize)
+let _wasMobile = isMobile();
+let _resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => {
+    const nowMobile = isMobile();
+    if (nowMobile === _wasMobile) return;
+    _wasMobile = nowMobile;
+    Object.keys(chartConfigs).forEach(key => {
+      const t = document.querySelector(`.toggle[data-chart="${key}"]`);
+      const mode = t ? t.querySelector('button.active')?.dataset.mode : (DEFAULT_MODES[key] || 'chz');
+      render(key, mode);
+    });
+  }, 220);
+});
+</script>
+</body>
+</html>
