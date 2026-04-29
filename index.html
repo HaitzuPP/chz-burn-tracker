@@ -111,9 +111,9 @@
   .tldr { border: 1px solid var(--ink); padding: 22px 28px 24px; margin-bottom: 36px; background: rgba(205,1,36,0.025); }
   .tldr-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); font-weight: 800; margin-bottom: 14px; }
   .tldr ul { list-style: none; padding: 0; margin: 0; }
-  .tldr li { position: relative; padding: 8px 0 8px 22px; font-size: 13.5px; line-height: 1.55; color: var(--ink); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tldr li { position: relative; padding: 9px 0 9px 22px; font-size: 13.5px; line-height: 1.55; color: var(--ink); border-bottom: 1px solid rgba(0,0,0,0.06); }
   .tldr li:last-child { border-bottom: none; }
-  .tldr li::before { content: "●"; position: absolute; left: 4px; color: var(--red); font-size: 9px; top: 13px; }
+  .tldr li::before { content: "●"; position: absolute; left: 4px; color: var(--red); font-size: 9px; top: 14px; }
   .tldr li b { color: var(--red); font-weight: 800; }
   .tldr li .stat { display: inline-block; min-width: 78px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
 
@@ -156,7 +156,6 @@
   .verify-link:hover { text-decoration: underline; }
 
   @media (max-width: 820px) {
-    .tldr-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
     .methodology { grid-template-columns: 1fr 1fr; }
     .meth-note { display: none; }
     .scenarios { grid-template-columns: 1fr; }
@@ -183,6 +182,109 @@
     .step:not(:last-child)::after { display: none; }
     h1 { font-size: 32px; }
     .card-head { flex-wrap: wrap; }
+  }
+
+  /* === Mobile (≤600px) === */
+  @media (max-width: 600px) {
+    .wrap { padding: 28px 14px 56px; }
+
+    /* Hero: stack stamp under content, left-align */
+    .hero { flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 20px; margin-bottom: 28px; }
+    .stamp { text-align: left; font-size: 10px; }
+    h1 { font-size: 26px; line-height: 1.1; }
+    .sub { font-size: 13px; line-height: 1.55; }
+
+    /* TL;DR */
+    .tldr { padding: 18px 18px 16px; margin-bottom: 28px; }
+    .tldr-eyebrow { font-size: 10px; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .tldr li { font-size: 12.5px; padding: 10px 0 10px 16px; }
+    .tldr li::before { top: 14px; font-size: 8px; }
+    .tldr li .stat { display: block; min-width: 0; color: var(--red); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; }
+
+    /* KPI strip */
+    .kpis { margin-bottom: 36px; }
+    .kpi { padding: 14px 14px; }
+    .kpi .value { font-size: 22px; }
+    .kpi .label { font-size: 10px; }
+    .kpi .delta { font-size: 11px; }
+
+    /* Cards */
+    section { margin-bottom: 36px; }
+    .card { padding: 18px 16px 14px; }
+    .card-head { gap: 12px; }
+    h2 { font-size: 17px; line-height: 1.25; }
+
+    /* Body copy */
+    .takeaway { font-size: 12.5px; }
+    ul.bullets li { font-size: 12.5px; padding: 5px 0 5px 16px; }
+    ul.bullets li::before { font-size: 14px; }
+
+    /* Toggles: bigger touch targets */
+    .toggle { padding: 3px; }
+    .toggle button { padding: 8px 13px; font-size: 11px; min-height: 32px; }
+    .toggle[data-chart="livePrice"] { flex-wrap: wrap; }
+
+    /* Live price stat */
+    .live-stat { flex-wrap: wrap; gap: 6px 10px; }
+    .live-price { font-size: 26px; }
+    .live-change { font-size: 13px; padding: 3px 8px; }
+    .live-meta { font-size: 11px; margin-left: 0; width: 100%; }
+
+    /* Event chips */
+    .event-chips { gap: 6px; }
+    .chip { padding: 7px 12px; font-size: 11px; }
+    .chip-date { font-size: 10px; }
+    .chip-label { font-size: 11px; }
+
+    /* Charts */
+    .chart-box { height: 240px; }
+    .chart-box.tall { height: 280px; }
+
+    /* Section sub-heads inside cards */
+    .section-sub { font-size: 10px; margin: 22px 0 10px; padding-top: 14px; }
+
+    /* Flywheel: stack to 1 column on mobile */
+    .flywheel { grid-template-columns: 1fr; gap: 8px; }
+    .step { padding: 12px 14px; text-align: left; }
+    .step .n { font-size: 9px; }
+
+    /* Methodology: clean stack with all info visible */
+    .methodology { grid-template-columns: 1fr; }
+    .meth-row { display: block !important; padding: 12px 0 !important; border-bottom: 1px solid var(--line) !important; }
+    .meth-row > div { padding: 0 !important; border-bottom: none !important; font-size: 12px; }
+    .meth-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); margin-bottom: 3px; }
+    .meth-value { font-size: 16px; }
+    .meth-note { display: block !important; padding-left: 0 !important; margin-top: 4px; font-size: 11px; line-height: 1.45; }
+
+    /* Totals: 1 col on mobile (override 820 rule) */
+    .totals-grid { grid-template-columns: 1fr; }
+    .total-card { border-right: none !important; border-bottom: 1px solid var(--line) !important; padding: 16px 18px; }
+    .total-card:last-child { border-bottom: none !important; }
+    .t-value { font-size: 24px; }
+    .t-label { font-size: 10px; }
+
+    /* Grand total */
+    .grand-total { padding: 18px 16px; }
+    .gt-value { font-size: 28px; }
+    .gt-label { font-size: 10px; letter-spacing: 0.12em; }
+    .gt-usd { font-size: 12px; }
+
+    /* Scenarios */
+    .scen { padding: 14px 16px; }
+    .scen-value { font-size: 20px; }
+    .scen-note { font-size: 11px; }
+
+    /* On-chain verify: stack address + link */
+    .verify-row { gap: 6px; padding: 12px 14px; flex-direction: column; align-items: flex-start; }
+    .verify-addr { font-size: 11px; width: 100%; }
+    .verify-link { font-size: 12px; padding-top: 2px; }
+
+    /* Disclosure note */
+    .ledger-note { padding: 12px 14px; font-size: 11.5px; }
+
+    /* Footer */
+    footer { font-size: 11px; padding-top: 16px; margin-top: 48px; line-height: 1.6; }
+    footer > div { margin-bottom: 12px; }
   }
 </style>
 </head>
@@ -486,7 +588,7 @@
       </div>
 
       <div class="ledger-note" style="margin-top: 16px;">
-        <div><b>Disclosure.</b> All forward-looking figures are Astra Research modelled estimates. They are not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
+        <div><b>Disclosure:</b> All forward-looking figures are Astra Research modelled estimates. They are not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
       </div>
 
       <h3 class="section-sub">On-Chain Verification</h3>
@@ -524,19 +626,19 @@
     <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
 
     <div style="border-top: 1px solid var(--line); padding-top: 14px; margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Operator.</strong> This website is operated by <strong>Astra Research</strong>, an independent research firm. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. All information presented is sourced from public materials and Astra Research analysis.
+      <strong style="color: var(--ink);">Operator:</strong> This website is operated by <strong>Astra Research</strong>, an independent research firm. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. All information presented is sourced from public materials and Astra Research analysis.
     </div>
 
     <div style="margin-bottom: 10px;">
-      <strong style="color: var(--ink);">No investment advice.</strong> The content on this site is for informational and educational purposes only. It does not constitute investment advice, financial advice, trading advice, legal advice, tax advice, or any other form of professional advice. No content here should be construed as a recommendation to buy, sell, or hold any digital asset, security, or other financial instrument.
+      <strong style="color: var(--ink);">No investment advice:</strong> The content on this site is for informational and educational purposes only. It does not constitute investment advice, financial advice, trading advice, legal advice, tax advice, or any other form of professional advice. No content here should be construed as a recommendation to buy, sell, or hold any digital asset, security, or other financial instrument.
     </div>
 
     <div style="margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Forward-looking statements.</strong> All projections, forecasts, scenarios, and forward-looking figures shown in Sections 03 and 04 are Astra Research modelled estimates based on assumptions and public data. They are not Chiliz guidance, do not represent guarantees of future performance, and may differ materially from actual results.
+      <strong style="color: var(--ink);">Forward-looking statements:</strong> All projections, forecasts, scenarios, and forward-looking figures shown in Sections 03 and 04 are Astra Research modelled estimates based on assumptions and public data. They are not Chiliz guidance, do not represent guarantees of future performance, and may differ materially from actual results.
     </div>
 
     <div style="margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Risk warning.</strong> Cryptocurrency holdings, including CHZ, carry significant risk including the potential total loss of principal. Past performance is not indicative of future results. Always conduct your own research and consult a qualified professional before making any investment decisions.
+      <strong style="color: var(--ink);">Risk warning:</strong> Cryptocurrency holdings, including CHZ, carry significant risk including the potential total loss of principal. Past performance is not indicative of future results. Always conduct your own research and consult a qualified professional before making any investment decisions.
     </div>
 
     <div style="margin-top: 14px; color: var(--grey);">© 2026 Astra Research. All rights reserved.</div>
