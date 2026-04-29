@@ -108,11 +108,20 @@
   }
 
   /* TL;DR callout */
-  .tldr { border: 1px solid var(--ink); padding: 22px 26px 24px; margin-bottom: 36px; background: rgba(205,1,36,0.025); }
+  .tldr { border: 1px solid var(--ink); padding: 22px 28px 24px; margin-bottom: 36px; background: rgba(205,1,36,0.025); }
   .tldr-eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); font-weight: 800; margin-bottom: 14px; }
-  .tldr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
-  .t-num { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 5px; }
-  .t-text { font-size: 12px; line-height: 1.55; color: var(--grey); }
+  .tldr ul { list-style: none; padding: 0; margin: 0; }
+  .tldr li { position: relative; padding: 8px 0 8px 22px; font-size: 13.5px; line-height: 1.55; color: var(--ink); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tldr li:last-child { border-bottom: none; }
+  .tldr li::before { content: "●"; position: absolute; left: 4px; color: var(--red); font-size: 9px; top: 13px; }
+  .tldr li b { color: var(--red); font-weight: 800; }
+  .tldr li .stat { display: inline-block; min-width: 78px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+
+  /* Bullet takeaways inside cards */
+  ul.bullets { list-style: none; padding: 0; margin: 0 0 18px; }
+  ul.bullets li { position: relative; padding: 5px 0 5px 18px; font-size: 13px; line-height: 1.55; color: var(--ink); }
+  ul.bullets li::before { content: "•"; position: absolute; left: 2px; color: var(--red); font-weight: 800; font-size: 16px; line-height: 1.4; }
+  ul.bullets li b { color: var(--red); }
 
   /* Section sub-heads inside cards */
   .section-sub { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 700; margin: 26px 0 10px; padding-top: 18px; border-top: 1px solid var(--line); }
@@ -183,34 +192,21 @@
   <!-- HERO -->
   <div class="hero">
     <div>
-      <div class="brand">$CHZ Value Accrual</div>
       <h1>Chiliz Burn Tracker</h1>
       <div class="sub">In February 2026, Chiliz redirected 10% of all Fan Token revenue into open-market CHZ buybacks and burns. After five years as a pure inflation token, CHZ is now a deflationary asset.</div>
     </div>
-    <div class="stamp">Updated Apr 2026</div>
+    <div class="stamp">Astra Research<br/>Apr 2026</div>
   </div>
 
   <!-- TL;DR -->
   <div class="tldr">
     <div class="tldr-eyebrow">TL;DR · The Allocator's 60-Second Read</div>
-    <div class="tldr-grid">
-      <div class="tldr-item">
-        <div class="t-num">FEB '26</div>
-        <div class="t-text">Chiliz committed 10% of all Fan Token revenue to open-market CHZ buybacks and burns.</div>
-      </div>
-      <div class="tldr-item">
-        <div class="t-num">17.1M</div>
-        <div class="t-text">CHZ permanently removed in 60 days, scaling 50x above the prior gas-only baseline.</div>
-      </div>
-      <div class="tldr-item">
-        <div class="t-num">+50%</div>
-        <div class="t-text">CHZ rerated within two months as the market priced in the deflationary regime.</div>
-      </div>
-      <div class="tldr-item">
-        <div class="t-num">2030</div>
-        <div class="t-text">Projected year of net deflation crossover under Pylon's central case.</div>
-      </div>
-    </div>
+    <ul>
+      <li><span class="stat">FEB '26</span> <b>Catalyst.</b> Chiliz committed 10% of all Fan Token revenue to open-market CHZ buybacks and burns.</li>
+      <li><span class="stat">17.1M</span> <b>Executed.</b> CHZ permanently removed in 60 days, scaling 50x above the prior gas-only baseline.</li>
+      <li><span class="stat">+50%</span> <b>Rerate.</b> CHZ rerated within two months as the market priced in the deflationary regime.</li>
+      <li><span class="stat">2030</span> <b>Crossover.</b> Projected year of net deflation under Astra Research's central case.</li>
+    </ul>
   </div>
 
   <!-- KPI STRIP -->
@@ -250,7 +246,11 @@
           <button data-mode="usd">USD</button>
         </div>
       </div>
-      <p class="takeaway">After five years as a pure inflation token, CHZ became a revenue beneficiary in February 2026 when Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced</a> that <b>10% of all Fan Token revenue would be redirected into open-market buybacks and burns</b>. The chart below maps that decision against price.</p>
+      <ul class="bullets">
+        <li><b>Catalyst.</b> February 2026 <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announcement</a> redirecting 10% of all Fan Token revenue into open-market CHZ buybacks and burns.</li>
+        <li><b>Mechanism.</b> Fan engagement now translates directly into CHZ supply reduction.</li>
+        <li><b>Result.</b> Chart below maps the announcement (Feb), first burn (Mar), and price reaction.</li>
+      </ul>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
       <h3 class="section-sub">The flywheel, end to end</h3>
       <div class="flywheel">
@@ -282,7 +282,10 @@
           <button data-mode="max">MAX</button>
         </div>
       </div>
-      <p class="takeaway" style="margin-top: 14px;">Spot price live from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>. Toggle 180D or MAX to see the announcement and first burn against price.</p>
+      <ul class="bullets" style="margin-top: 14px;">
+        <li>Spot price live from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a>, refreshed on every page load.</li>
+        <li>Toggle <b>180D or MAX</b> to overlay the announcement and first burn directly on the price chart.</li>
+      </ul>
       <div class="event-chips">
         <a class="chip" href="https://x.com/Chiliz/status/2027103512409051232" target="_blank">
           <span class="chip-dot"></span>
@@ -313,7 +316,11 @@
             <button data-mode="usd">USD</button>
           </div>
         </div>
-        <p class="takeaway">Tokenomics 2.0 went live in March and removed <b>18 million CHZ in 60 days</b>. The prior gas-fee-only regime needed years to take an equivalent amount out of supply.</p>
+        <ul class="bullets">
+          <li>Tokenomics 2.0 went live in March 2026.</li>
+          <li><b>18M CHZ removed</b> in the first 60 days.</li>
+          <li>Prior gas-fee-only regime needed years to do the same.</li>
+        </ul>
         <div class="chart-box"><canvas id="cumBurn"></canvas></div>
       </div>
       <div class="card">
@@ -327,7 +334,11 @@
             <button data-mode="usd">USD</button>
           </div>
         </div>
-        <p class="takeaway">March was the step-function moment, April topped it. <b>Burn pace is compounding</b> as Fan Token engagement scales the buyback base.</p>
+        <ul class="bullets">
+          <li>March was the step-function moment.</li>
+          <li>April topped it (9.2M CHZ burned).</li>
+          <li><b>Pace is compounding</b> as Fan Token engagement scales the buyback base.</li>
+        </ul>
         <div class="chart-box"><canvas id="monthly"></canvas></div>
       </div>
     </div>
@@ -342,7 +353,11 @@
           <h2>The path to net deflation</h2>
         </div>
       </div>
-      <p class="takeaway" style="margin-bottom: 0;">CHZ issuance follows a programmed decay curve from <b>8.8% in 2026 to 1.88% by 2040</b>. On Pylon's central case, the burn curve crosses the issuance curve by <b>2030</b>, and from that point forward CHZ supply contracts every year.</p>
+      <ul class="bullets" style="margin-bottom: 0;">
+        <li>Issuance decays from <b>8.8% in 2026 to 1.88% by 2040</b>, on a programmed schedule.</li>
+        <li>Burn curve crosses issuance curve by <b>2030</b> under the central case.</li>
+        <li>From crossover onward, CHZ supply contracts every year.</li>
+      </ul>
     </div>
     <div class="row">
       <div class="card">
@@ -383,7 +398,11 @@
           <h2>The forecast and what drives it</h2>
         </div>
       </div>
-      <p class="takeaway">Pylon Partners' base case implies <b>more than 650 million CHZ permanently removed from supply by 2028</b>, equivalent to roughly $32 million in cumulative buy-side pressure at current prices. Executed totals are sourced from the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official Chiliz burn report</a>; forward figures are modelled.</p>
+      <ul class="bullets">
+        <li><b>650M+ CHZ removed by 2028</b> on the Astra Research base case.</li>
+        <li>Equivalent to <b>~$32M cumulative buy-side pressure</b> at current prices.</li>
+        <li>Executed totals from the <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">official Chiliz burn report</a>; forward figures modelled below.</li>
+      </ul>
 
       <div class="totals-grid">
         <div class="total-card exec">
@@ -467,7 +486,7 @@
       </div>
 
       <div class="ledger-note" style="margin-top: 16px;">
-        <div><b>Disclosure.</b> All forward-looking figures are Pylon Partners modelled estimates. They are not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
+        <div><b>Disclosure.</b> All forward-looking figures are Astra Research modelled estimates. They are not Chiliz guidance. Actual results may differ materially. Not investment advice.</div>
       </div>
 
       <h3 class="section-sub">On-Chain Verification</h3>
@@ -492,14 +511,35 @@
           <button data-mode="split">SPLIT</button>
         </div>
       </div>
-      <p class="takeaway">Fan Token Play affects club tokens like $BAR, $PSG, and $JUV, not CHZ itself. Wins burn club Fan Tokens, losses mint them, capped at 75% lifetime reduction. <b>Why it matters for CHZ holders: anything that drives Fan Token engagement scales the revenue base that funds the buybacks above.</b></p>
+      <ul class="bullets">
+        <li>Affects <b>club tokens</b> ($BAR, $PSG, $JUV), not CHZ itself.</li>
+        <li>Wins burn club Fan Tokens; losses mint them; capped at 75% lifetime reduction.</li>
+        <li><b>Why it matters for CHZ:</b> Fan Token engagement scales the revenue base that funds CHZ buybacks above.</li>
+      </ul>
       <div class="chart-box"><canvas id="winLoss"></canvas></div>
     </div>
   </section>
 
   <footer>
-    Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.
-    <br/>Forward looking projections in Sections 03 and 04 are Pylon Partners modelled scenarios, not Chiliz guidance. Not investment advice.
+    <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
+
+    <div style="border-top: 1px solid var(--line); padding-top: 14px; margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Operator.</strong> This website is operated by <strong>Astra Research</strong>, an independent research firm. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. All information presented is sourced from public materials and Astra Research analysis.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">No investment advice.</strong> The content on this site is for informational and educational purposes only. It does not constitute investment advice, financial advice, trading advice, legal advice, tax advice, or any other form of professional advice. No content here should be construed as a recommendation to buy, sell, or hold any digital asset, security, or other financial instrument.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Forward-looking statements.</strong> All projections, forecasts, scenarios, and forward-looking figures shown in Sections 03 and 04 are Astra Research modelled estimates based on assumptions and public data. They are not Chiliz guidance, do not represent guarantees of future performance, and may differ materially from actual results.
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <strong style="color: var(--ink);">Risk warning.</strong> Cryptocurrency holdings, including CHZ, carry significant risk including the potential total loss of principal. Past performance is not indicative of future results. Always conduct your own research and consult a qualified professional before making any investment decisions.
+    </div>
+
+    <div style="margin-top: 14px; color: var(--grey);">© 2026 Astra Research. All rights reserved.</div>
   </footer>
 
 </div>
