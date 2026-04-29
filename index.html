@@ -244,7 +244,7 @@
           <button data-mode="usd">USD</button>
         </div>
       </div>
-      <p class="takeaway">Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced the buyback program</a> in Feb 2025. Markets anticipated. In March 2026 the first burns hit, and burns scaled <b>50x in 60 days</b>. CHZ has rerated <b>+63% from 2025 lows</b>. The flywheel is live.</p>
+      <p class="takeaway">Chiliz <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">announced the buyback program</a> in Feb 2026. Markets reacted within weeks. By March the first burns hit and scaled <b>50x in 60 days</b>. CHZ rerated <b>+50% in two months</b>. The flywheel is live.</p>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
     </div>
   </section>
@@ -258,11 +258,11 @@
           <h2>Win burns. Loss mints.</h2>
         </div>
         <div class="toggle" data-chart="winLoss">
-          <button class="active" data-mode="chz">CHZ</button>
-          <button data-mode="usd">USD</button>
+          <button class="active" data-mode="net">NET</button>
+          <button data-mode="split">SPLIT</button>
         </div>
       </div>
-      <p class="takeaway">Match results move supply directly. Skin in the game, on chain. <b>Hard cap at 75% net reduction.</b></p>
+      <p class="takeaway"><b>This applies to club Fan Tokens, not $CHZ.</b> Wins burn club tokens like $BAR, $PSG, $JUV. Losses mint them. The CHZ link is indirect: more Fan Token engagement means more revenue, which means more CHZ buybacks above. Hard cap at 75% net reduction.</p>
       <div class="chart-box"><canvas id="winLoss"></canvas></div>
     </div>
   </section>
@@ -353,6 +353,23 @@ async function tryRefreshLive(range) {
   return false;
 }
 
+// Key event timestamps (UTC ms). Will be drawn on live chart when in range.
+const LIVE_EVENTS = [
+  { ts: Date.UTC(2026, 1, 10), short: 'ANNOUNCED', color: '#CD0124', y: 12 },
+  { ts: Date.UTC(2026, 2, 5),  short: 'FIRST BURN', color: '#CD0124', y: 36 }
+];
+
+function findNearestIdx(pts, ts) {
+  if (!pts.length) return -1;
+  if (ts < pts[0][0] - 86400000 || ts > pts[pts.length - 1][0] + 86400000) return -1;
+  let best = -1, bestDiff = Infinity;
+  for (let i = 0; i < pts.length; i++) {
+    const d = Math.abs(pts[i][0] - ts);
+    if (d < bestDiff) { bestDiff = d; best = i; }
+  }
+  return best;
+}
+
 chartConfigs.livePrice = {
   build(mode) {
     const pts = CHZ_DATA[mode] || CHZ_DATA['30d'];
@@ -364,6 +381,14 @@ chartConfigs.livePrice = {
     const isUp = pct >= 0;
     const color = isUp ? GREEN : RED;
     const fillColor = isUp ? 'rgba(14,142,90,0.10)' : 'rgba(205,1,36,0.10)';
+
+    // Compute event markers that fall inside the current range
+    const events = LIVE_EVENTS
+      .map(ev => {
+        const idx = findNearestIdx(pts, ev.ts);
+        return idx >= 0 ? { idx, short: ev.short, color: ev.color, y: ev.y } : null;
+      })
+      .filter(Boolean);
 
     // Update header readout
     const priceEl = document.getElementById('chzLivePrice');
@@ -389,6 +414,7 @@ chartConfigs.livePrice = {
       options: {
         responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
         interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: events.length ? 60 : 8 } },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -396,7 +422,8 @@ chartConfigs.livePrice = {
               title: items => fullLabels[items[0].dataIndex],
               label: c => '$' + c.parsed.y.toFixed(4)
             }
-          }
+          },
+          eventLines: { events }
         },
         scales: {
           x: { grid: noGrid, ticks: { ...tickStyle, autoSkip: true, maxTicksLimit: 7, maxRotation: 0, font: { size: 10 } } },
@@ -560,16 +587,16 @@ chartConfigs.netSupply = {
   }
 };
 
-// ---------- 06 PRICE × BURNS (FULL TIMELINE WITH EVENT MARKERS) ----------
-const pbLabels = ['Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'];
-const pbBurnsChz = [0.05, 0.07, 0.08, 0.09, 0.10, 0.10, 0.12, 0.15, 0.14, 0.16, 0.18, 0.22, 0.41, 0.31, 7.90, 9.20];
-const pbPrice    = [0.030, 0.034, 0.036, 0.035, 0.033, 0.038, 0.041, 0.040, 0.038, 0.036, 0.039, 0.040, 0.039, 0.041, 0.046, 0.049];
+// ---------- 06 PRICE × BURNS (12-month timeline with event markers) ----------
+const pbLabels = ['May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'];
+const pbBurnsChz = [0.10, 0.10, 0.12, 0.15, 0.14, 0.16, 0.18, 0.22, 0.41, 0.31, 7.90, 9.20];
+const pbPrice    = [0.038, 0.041, 0.040, 0.038, 0.036, 0.039, 0.040, 0.041, 0.041, 0.043, 0.046, 0.049];
 
 // Event markers (idx into labels array)
 const pbEvents = [
-  { idx: 1,  label: 'TOKENOMICS 2.0 ANNOUNCED', short: 'ANNOUNCED', color: '#CD0124', y: 12 },
-  { idx: 14, label: 'FIRST BURN EXECUTED',      short: 'FIRST BURN', color: '#CD0124', y: 12 },
-  { idx: 15, label: 'FAN TOKEN PLAY LIVE',      short: 'FAN PLAY',  color: '#0E8E5A', y: 36 }
+  { idx: 9,  label: 'TOKENOMICS 2.0 ANNOUNCED', short: 'ANNOUNCED', color: '#CD0124', y: 12 },
+  { idx: 10, label: 'FIRST BURN EXECUTED',      short: 'FIRST BURN', color: '#CD0124', y: 12 },
+  { idx: 11, label: 'FAN TOKEN PLAY LIVE',      short: 'FAN PLAY',  color: '#0E8E5A', y: 36 }
 ];
 
 // Plugin: vertical event lines + label pills
@@ -637,7 +664,7 @@ chartConfigs.priceBurn = {
           {
             type: 'bar', label: isUsd ? 'Monthly Burn (USD)' : 'Monthly Burn (CHZ)',
             data: burnData,
-            backgroundColor: pbBurnsChz.map((_, i) => i >= 14 ? RED : (i >= 1 ? 'rgba(205,1,36,0.45)' : '#9CA3AF')),
+            backgroundColor: pbBurnsChz.map((_, i) => i >= 10 ? RED : (i === 9 ? 'rgba(205,1,36,0.55)' : '#9CA3AF')),
             yAxisID: 'y', borderRadius: 2, barPercentage: 0.7, categoryPercentage: 0.85
           },
           {
@@ -676,35 +703,41 @@ chartConfigs.priceBurn = {
   }
 };
 
-// ---------- 07 WIN/LOSS ----------
-const wlLabels = ['PSG', 'Barça', 'Juventus', 'Man City', 'Inter', 'Atlético', 'Roma', 'Spurs'];
-const wlBurnedChz = [120, 95, 60, 140, 80, 55, 40, 30]; // K CHZ
-const wlMintedChz = [-40, -35, -50, -25, -45, -60, -55, -65];
+// ---------- 07 FAN TOKEN PLAY (per-club Fan Token supply impact) ----------
+const wlLabels = ['$PSG', '$BAR', '$JUV', '$CITY', '$INTER', '$ATM', '$ROMA', '$SPURS'];
+const wlBurned = [120, 95, 60, 140, 80, 55, 40, 30];   // K Fan Tokens burned (wins)
+const wlMinted = [-40, -35, -50, -25, -45, -60, -55, -65]; // K Fan Tokens minted (losses)
 chartConfigs.winLoss = {
   build(mode) {
-    const isUsd = mode === 'usd';
-    const burned = isUsd ? wlBurnedChz.map(v => +(v * PRICE).toFixed(2)) : wlBurnedChz;
-    const minted = isUsd ? wlMintedChz.map(v => +(v * PRICE).toFixed(2)) : wlMintedChz;
-    const unit = isUsd ? '$K' : 'K CHZ';
-    const fmt = v => Math.abs(v).toFixed(isUsd ? 1 : 0) + (isUsd ? 'K' : 'K');
+    const isSplit = mode === 'split';
+    let datasets;
+    if (isSplit) {
+      datasets = [
+        { label: 'Burned (wins)', data: wlBurned, backgroundColor: RED, borderRadius: 2, barPercentage: 0.7 },
+        { label: 'Minted (losses)', data: wlMinted, backgroundColor: '#9CA3AF', borderRadius: 2, barPercentage: 0.7 }
+      ];
+    } else {
+      const net = wlBurned.map((b, i) => b + wlMinted[i]);
+      const colors = net.map(v => v >= 0 ? RED : '#9CA3AF');
+      datasets = [{ label: 'Net supply change', data: net, backgroundColor: colors, borderRadius: 2, barPercentage: 0.7 }];
+    }
     return {
       type: 'bar',
-      data: {
-        labels: wlLabels,
-        datasets: [
-          { label: 'Burned (wins)', data: burned, backgroundColor: RED, borderRadius: 2, barPercentage: 0.7 },
-          { label: 'Minted (losses)', data: minted, backgroundColor: '#9CA3AF', borderRadius: 2, barPercentage: 0.7 }
-        ]
-      },
+      data: { labels: wlLabels, datasets },
       options: {
         responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
         plugins: {
-          legend: { display: true, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 10 } },
-          tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (isUsd ? '$' : '') + Math.abs(c.parsed.y) + (isUsd ? 'K' : 'K CHZ') } }
+          legend: { display: isSplit, position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 10 } },
+          tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (c.parsed.y >= 0 ? '+' : '') + c.parsed.y + 'K Fan Tokens' } }
         },
         scales: {
-          x: { grid: noGrid, ticks: tickStyle, stacked: true },
-          y: { grid: baseGrid, ticks: { ...tickStyle, callback: v => (isUsd ? '$' : '') + Math.abs(v) + 'K' }, stacked: true }
+          x: { grid: noGrid, ticks: tickStyle, stacked: isSplit },
+          y: {
+            grid: baseGrid,
+            ticks: { ...tickStyle, callback: v => (v >= 0 ? '+' : '') + v + 'K' },
+            stacked: isSplit,
+            title: { display: true, text: 'Fan Token supply change (thousands)', color: GREY, font: { size: 11, weight: '700' } }
+          }
         }
       }
     };
