@@ -494,40 +494,44 @@
           <div class="eyebrow">04 · STAKE COMPRESSION</div>
           <h2>Liquid float, locked from both ends</h2>
         </div>
+        <div class="toggle" data-chart="stake">
+          <button class="active" data-mode="pct">% RATIO</button>
+          <button data-mode="chz">CHZ</button>
+        </div>
       </div>
       <ul class="bullets">
-        <li><b>2.42B CHZ staked</b> on Chiliz Chain today, around 23% of circulating supply, secured by 13 active validators.</li>
-        <li>Stake peaked at 2.69B in late November 2025, then trended lower through the buyback announcement window as holders repositioned. Bottomed at 2.25B in late February before stabilising.</li>
-        <li><b>The thesis:</b> as burns shrink total supply and staking locks the rest, the liquid tradeable float compresses on both ends. That is the structural setup that makes price moves more responsive to flow.</li>
+        <li><b>23.4% of circulating CHZ is currently staked</b> on Chiliz Chain, secured across 13 active validators.</li>
+        <li>The staking ratio has dropped <b>2.3 percentage points over the past 6 months</b>, from 25.8% in October 2025 to 23.4% today, as holders repositioned through the announcement window.</li>
+        <li><b>The thesis:</b> as burns shrink total supply from one side and staking locks supply from the other, the liquid tradeable float compresses on both ends. Watch the ratio rebuild post-announcement to confirm conviction.</li>
       </ul>
 
       <div class="totals-grid">
         <div class="total-card exec">
-          <div class="t-label">Total Staked</div>
-          <div class="t-value">2.42<span class="unit">B CHZ</span></div>
-          <div class="t-usd">≈ $119M at current price</div>
-        </div>
-        <div class="total-card">
-          <div class="t-label">% of circulating</div>
+          <div class="t-label">Currently staked</div>
           <div class="t-value">23.4<span class="unit">%</span></div>
-          <div class="t-usd">10.33B CHZ outstanding</div>
+          <div class="t-usd">2.42B CHZ ≈ $119M</div>
         </div>
         <div class="total-card">
-          <div class="t-label">30D net change</div>
-          <div class="t-value">-0.3<span class="unit">%</span></div>
-          <div class="t-usd">-6M CHZ flat trend</div>
+          <div class="t-label">30D ratio change</div>
+          <div class="t-value">-0.16<span class="unit">pp</span></div>
+          <div class="t-usd">flat trend, recent stability</div>
         </div>
         <div class="total-card">
-          <div class="t-label">90D net change</div>
-          <div class="t-value">-3.4<span class="unit">%</span></div>
-          <div class="t-usd">-86M CHZ unstaked</div>
+          <div class="t-label">90D ratio change</div>
+          <div class="t-value">-1.08<span class="unit">pp</span></div>
+          <div class="t-usd">-86M CHZ net unstaked</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">6M ratio change</div>
+          <div class="t-value">-2.34<span class="unit">pp</span></div>
+          <div class="t-usd">from 25.78% peak</div>
         </div>
       </div>
 
       <div class="chart-box tall" style="margin-top: 22px;"><canvas id="stake"></canvas></div>
 
       <div class="ledger-note" style="margin-top: 14px;">
-        <div><b>Data source:</b> Read directly from the Chiliz Chain validator system contract at <a href="https://scan.chiliz.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...1000</a> via public RPC. Snapshots refreshed daily. The 11-validator figure in Chiliz docs has expanded to 13 active validators today.</div>
+        <div><b>Data source:</b> Staked CHZ read directly from the Chiliz Chain validator system contract at <a href="https://scan.chiliz.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...1000</a> via public RPC. Circulating supply derived from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a> historical market caps. The 11-validator figure in Chiliz docs has since expanded to 13 active validators.</div>
       </div>
     </div>
   </section>
@@ -950,8 +954,9 @@ chartConfigs.priceBurn = {
 };
 
 // ---------- 04 STAKE COMPRESSION (on-chain) ----------
-// Snapshots from system contract 0x0000...1000 balance, weekly Oct 2025 to Apr 2026
-const STAKE_SNAPSHOTS = [[1761926878166,2598824852],[1763136478435,2600829594],[1764346078713,2690749047],[1765555679035,2678802297],[1766765279391,2608098979],[1767974879650,2605637586],[1769184479906,2502120521],[1769702869117,2506797894],[1769962069462,2484544558],[1770221269716,2485926133],[1770480469978,2489730757],[1770739670240,2463078025],[1770998870622,2474267918],[1771258070883,2476720148],[1771517271206,2482697064],[1771776471468,2248093829],[1772035671814,2441029478],[1772294872083,2435673011],[1772554072351,2433576400],[1772813272614,2299409311],[1773072472877,2311918920],[1773331673135,2448539979],[1773590873397,2446961192],[1773850073741,2461590735],[1774109274007,2465769921],[1774368474272,2330324184],[1774627674536,2438388025],[1774886874794,2427159664],[1775146075055,2433419952],[1775405275403,2417137207],[1775664475750,2424274597],[1775923676098,2432834492],[1776182876558,2436486437],[1776442076817,2432159384],[1776701277121,2426402220],[1776960477380,2435599239],[1777219677652,2424927270],[1777478877912,2420974207]];
+// Snapshots: [timestamp_ms, staked_chz, circulating_supply, pct_ratio]
+// Stake from system contract 0x0000...1000, supply derived from CoinGecko market_caps/prices
+const STAKE_SNAPSHOTS = [[1761926878166,2598824852,10079320378,25.78],[1763136478435,2600829594,10115743390,25.71],[1764346078713,2690749047,10125743320,26.57],[1765555679035,2678802297,10157251520,26.37],[1766765279391,2608098979,10172482160,25.64],[1767974879650,2605637586,10180834290,25.59],[1769184479906,2502120521,10193260710,24.55],[1769702869117,2506797894,10223866982,24.52],[1769962069462,2484544558,10209550430,24.34],[1770221269716,2485926133,10212440210,24.34],[1770480469978,2489730757,10215884520,24.37],[1770739670240,2463078025,10221940380,24.10],[1770998870622,2474267918,10225014150,24.20],[1771258070883,2476720148,10229650400,24.21],[1771517271206,2482697064,10234118260,24.26],[1771776471468,2248093829,10238442190,21.96],[1772035671814,2441029478,10245238340,23.83],[1772294872083,2435673011,10248720590,23.77],[1772554072351,2433576400,10252210470,23.74],[1772813272614,2299409311,10256314580,22.42],[1773072472877,2311918920,10260740150,22.53],[1773331673135,2448539979,10262560280,23.86],[1773590873397,2446961192,10265370160,23.84],[1773850073741,2461590735,10268910530,23.97],[1774109274007,2465769921,10272430870,24.00],[1774368474272,2330324184,10275923890,22.68],[1774627674536,2438388025,10278752340,23.72],[1774886874794,2427159664,10286241729,23.60],[1775146075055,2433419952,10288170450,23.65],[1775405275403,2417137207,10293410820,23.48],[1775664475750,2424274597,10298590730,23.54],[1775923676098,2432834492,10303620360,23.61],[1776182876558,2436486437,10308750640,23.63],[1776442076817,2432159384,10313920550,23.58],[1776701277121,2426402220,10318750840,23.51],[1776960477380,2435599239,10323560920,23.59],[1777219677652,2424927270,10327650390,23.48],[1777478877912,2420974207,10330539540,23.44]];
 
 const STAKE_EVENTS = [
   { ts: Date.UTC(2026, 1, 9),  short: 'ANNOUNCED',  color: '#CD0124', y: 12 },
@@ -959,7 +964,8 @@ const STAKE_EVENTS = [
 ];
 
 chartConfigs.stake = {
-  build() {
+  build(mode) {
+    const isPct = mode === 'pct' || mode === undefined;
     const pts = STAKE_SNAPSHOTS;
     const labels = pts.map(p => {
       const d = new Date(p[0]);
@@ -969,7 +975,8 @@ chartConfigs.stake = {
       const d = new Date(p[0]);
       return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     });
-    const data = pts.map(p => p[1] / 1e9); // billions
+
+    const data = isPct ? pts.map(p => p[3]) : pts.map(p => p[1] / 1e9);
 
     const events = STAKE_EVENTS
       .map(ev => {
@@ -983,7 +990,7 @@ chartConfigs.stake = {
       data: {
         labels,
         datasets: [{
-          label: 'Total CHZ staked',
+          label: isPct ? 'Stake ratio' : 'CHZ staked',
           data,
           borderColor: RED, backgroundColor: 'rgba(205,1,36,0.10)',
           fill: true, tension: 0.25, pointRadius: 0, pointHoverRadius: 5, borderWidth: 2.5
@@ -998,7 +1005,14 @@ chartConfigs.stake = {
           tooltip: {
             callbacks: {
               title: items => fullLabels[items[0].dataIndex],
-              label: c => c.parsed.y.toFixed(3) + 'B CHZ staked'
+              label: c => {
+                const idx = c.dataIndex;
+                const p = pts[idx];
+                if (isPct) {
+                  return p[3].toFixed(2) + '% (' + (p[1] / 1e9).toFixed(2) + 'B / ' + (p[2] / 1e9).toFixed(2) + 'B circ)';
+                }
+                return (p[1] / 1e9).toFixed(3) + 'B CHZ staked';
+              }
             }
           },
           eventLines: { events }
@@ -1007,8 +1021,8 @@ chartConfigs.stake = {
           x: { grid: noGrid, ticks: { ...tickStyle(), autoSkip: true, maxTicksLimit: isMobile() ? 5 : 8, maxRotation: 0, font: { size: isMobile() ? 9 : 10 } } },
           y: {
             grid: baseGrid,
-            ticks: { ...tickStyle(), callback: v => v.toFixed(2) + 'B', maxTicksLimit: isMobile() ? 5 : 6 },
-            title: { display: true, text: 'CHZ staked (billions)', color: GREY, font: { size: 11, weight: '700' } }
+            ticks: { ...tickStyle(), callback: v => isPct ? v.toFixed(1) + '%' : v.toFixed(2) + 'B', maxTicksLimit: isMobile() ? 5 : 6 },
+            title: { display: true, text: isPct ? 'Stake / Circulating supply (%)' : 'CHZ staked (billions)', color: GREY, font: { size: 11, weight: '700' } }
           }
         }
       }
