@@ -123,6 +123,26 @@
   ul.bullets li::before { content: "•"; position: absolute; left: 2px; color: var(--red); font-weight: 800; font-size: 16px; line-height: 1.4; }
   ul.bullets li b { color: var(--red); }
 
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 36px; overflow-x: auto; position: sticky; top: 0; background: var(--bg); z-index: 10; padding-top: 6px; margin-top: 4px; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 14px 22px; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap; background: transparent; border-left: 0; border-right: 0; border-top: 0; font-family: inherit; }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); border-bottom-color: var(--red); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+  .tab-count { font-size: 10px; color: var(--grey); margin-left: 6px; font-weight: 700; }
+  .tab.active .tab-count { color: var(--red); }
+
+  /* Risk callout */
+  .risk-block { border: 1px solid var(--line); border-left: 3px solid var(--red); padding: 22px 24px; margin-top: 56px; background: rgba(205,1,36,0.02); }
+  .risk-block .eyebrow { margin-bottom: 8px; }
+  .risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+  .risk-item { font-size: 12.5px; line-height: 1.55; color: var(--ink); }
+  .risk-item b { color: var(--red); display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  @media (max-width: 600px) { .risk-grid { grid-template-columns: 1fr; gap: 14px; } }
+
   /* Section sub-heads inside cards */
   .section-sub { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 700; margin: 26px 0 10px; padding-top: 18px; border-top: 1px solid var(--line); }
 
@@ -335,6 +355,16 @@
     </div>
   </div>
 
+  <!-- TABS NAV -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="catalyst" role="tab">Catalyst<span class="tab-count">2</span></button>
+    <button class="tab" data-tab="burns" role="tab">Burns &amp; Supply<span class="tab-count">4</span></button>
+    <button class="tab" data-tab="float" role="tab">Float &amp; Stakers<span class="tab-count">2</span></button>
+  </div>
+
+  <!-- TAB PANEL: CATALYST -->
+  <div class="tab-panel active" id="tab-catalyst" role="tabpanel">
+
   <!-- 01 THE CATALYST (announcement chart + flywheel) -->
   <section>
     <div class="card">
@@ -397,6 +427,11 @@
       <div class="chart-box tall"><canvas id="livePrice"></canvas></div>
     </div>
   </section>
+
+  </div><!-- /tab-panel catalyst -->
+
+  <!-- TAB PANEL: BURNS & SUPPLY -->
+  <div class="tab-panel" id="tab-burns" role="tabpanel">
 
   <!-- 02 BURN ACTIVITY (cumulative + monthly paired) -->
   <section>
@@ -485,6 +520,11 @@
     </div>
   </section>
 
+
+  </div><!-- /tab-panel burns -->
+
+  <!-- TAB PANEL: FLOAT & STAKERS -->
+  <div class="tab-panel" id="tab-float" role="tabpanel">
 
   <!-- 04 FREE FLOAT -->
   <section>
@@ -577,6 +617,23 @@
       </div>
     </div>
   </section>
+
+  </div><!-- /tab-panel float -->
+
+  <!-- RISK FACTORS -->
+  <div class="risk-block">
+    <div class="eyebrow">RISK FACTORS</div>
+    <h2 style="font-size: 18px; margin: 4px 0 6px;">What breaks the thesis</h2>
+    <p class="takeaway" style="margin-bottom: 8px;">Honest list of what would invalidate the buyback flywheel narrative. Track each as the program matures.</p>
+    <div class="risk-grid">
+      <div class="risk-item"><b>Buyback paused or reduced:</b> Chiliz reserves the right to pause or alter the 10% allocation. Any deviation breaks the supply-side math.</div>
+      <div class="risk-item"><b>Fan Token revenue contraction:</b> Burns scale with FT revenue. A World Cup miss, club partnership churn, or marketplace volume decline shrinks the buyback base.</div>
+      <div class="risk-item"><b>Validator concentration:</b> Top three validators capture 35% of stake and 70% of unique stakers. Failure or collusion at the top is a chain-level risk.</div>
+      <div class="risk-item"><b>Stake exits accelerate:</b> Unstaking has outpaced burns by 5x over the past 6 months. If the trend persists, free float keeps growing despite the buyback.</div>
+      <div class="risk-item"><b>Regulatory action:</b> Fan Tokens have drawn scrutiny in multiple jurisdictions. A regulatory event could compress revenue or block specific markets.</div>
+      <div class="risk-item"><b>Crypto beta:</b> CHZ trades as a high-beta altcoin. The supply-side story will be drowned out in a broad crypto drawdown regardless of fundamentals.</div>
+    </div>
+  </div>
 
   <footer>
     <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
@@ -1197,6 +1254,29 @@ document.querySelectorAll('.toggle').forEach(t => {
   const ok = await tryRefreshLive('180d');
   if (ok) render('livePrice', '180d');
 })();
+
+// ---- Tabs ----
+function switchTab(tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabId));
+  // Re-render charts inside the now-visible panel so Chart.js sees their proper sizes
+  const panel = document.getElementById('tab-' + tabId);
+  if (panel) {
+    panel.querySelectorAll('canvas').forEach(c => {
+      const key = c.id;
+      if (chartConfigs[key]) {
+        const t = panel.querySelector(`.toggle[data-chart="${key}"]`);
+        const mode = t ? t.querySelector('button.active')?.dataset.mode : (DEFAULT_MODES[key] || 'chz');
+        render(key, mode);
+      }
+    });
+  }
+  if (history.replaceState) history.replaceState(null, '', '#' + tabId);
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+// Deep-link via hash on load
+const hashTab = (location.hash || '').replace('#','');
+if (['catalyst','burns','float'].includes(hashTab)) switchTab(hashTab);
 
 // Re-render charts when crossing the mobile breakpoint (rotation, resize)
 let _wasMobile = isMobile();
