@@ -300,8 +300,20 @@
 
     /* KPI cards: tighter mobile padding so 4-up stack stays compact */
     .kpi { min-height: auto; padding: 14px 16px 12px; }
-    .kpi .value { font-size: 28px; }
-    .kpi-spark { height: 26px; margin-top: 6px; }
+    .kpi .value { font-size: 26px; line-height: 1.05; }
+    .kpi .label { font-size: 9px; }
+    .kpi .delta { font-size: 9.5px; }
+    .kpi-spark { height: 24px; margin-top: 6px; }
+
+    /* Card-head: stack title above toggle so h2 gets full width */
+    .card-head { flex-direction: column; align-items: stretch; gap: 12px; }
+    .card-head > div:first-child { width: 100%; }
+    .card-head .toggle { align-self: flex-start; }
+    h2 { font-size: 22px; }
+
+    /* Tables: visible scroll affordance */
+    .table-scroll { position: relative; }
+    .table-scroll::after { content: "Scroll →"; position: absolute; right: 4px; bottom: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); pointer-events: none; opacity: 0.7; }
 
     .hero { flex-direction: column; align-items: flex-start; gap: 14px; padding: 24px 0 22px; margin-bottom: 28px; }
     .stamp { text-align: left; }
@@ -395,9 +407,9 @@
     </div>
     <div class="kpi">
       <div>
-        <div class="label">Annualised run-rate</div>
-        <div class="value">~110M</div>
-        <div class="delta">≈ 1.06% of supply</div>
+        <div class="label">Annualised (Apr × 12)</div>
+        <div class="value">110M</div>
+        <div class="delta">1.06% of supply</div>
       </div>
       <div class="kpi-spark"><canvas id="sparkCum"></canvas></div>
     </div>
