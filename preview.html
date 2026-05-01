@@ -532,6 +532,52 @@
     </div>
   </section>
 
+  <!-- 05 STAKERS -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">05 · STAKERS</div>
+          <h2>Who is actually staking, and where</h2>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li><b>450 unique addresses</b> have staked CHZ over the past 7 months, distributed across 13 active validators on Chiliz Chain.</li>
+        <li>Concentration is real: the <b>top validator holds 36% of unique stakers</b>, and the top three together capture 70%. The long tail of nine validators competes for the remaining 30%.</li>
+        <li>Stake events outpace unstake events <b>3,012 to 2,276</b> (1.32:1 ratio), pointing to more inflow transactions than outflow. The fact that net stake balance still drifted lower suggests the average unstake size is larger than the average stake size.</li>
+      </ul>
+
+      <div class="totals-grid">
+        <div class="total-card exec">
+          <div class="t-label">Unique stakers</div>
+          <div class="t-value">450</div>
+          <div class="t-usd">over the last ~7 months</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">Stake events</div>
+          <div class="t-value">3,012</div>
+          <div class="t-usd">delegations submitted</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">Unstake events</div>
+          <div class="t-value">2,276</div>
+          <div class="t-usd">76% of stake event count</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">Top validator share</div>
+          <div class="t-value">36<span class="unit">%</span></div>
+          <div class="t-usd">160 stakers, concentration risk</div>
+        </div>
+      </div>
+
+      <div class="chart-box tall" style="margin-top: 22px;"><canvas id="stakers"></canvas></div>
+
+      <div class="ledger-note" style="margin-top: 14px;">
+        <div><b>Data source:</b> <code style="background:#f5f5f5;padding:1px 5px;font-size:11px;">Stake</code> and <code style="background:#f5f5f5;padding:1px 5px;font-size:11px;">Unstake</code> event logs read from the Chiliz staking contract <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000007001" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...7001</a> via the Routescan API. The 7-month window covers approximately 6 million blocks. Stakers per validator counts unique addresses; multi-validator delegators are counted once per validator they touched.</div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
 
@@ -1047,6 +1093,66 @@ chartConfigs.stake = {
             title: { display: true, text: 'Circulating supply, stacked (B CHZ)', color: GREY, font: { size: 11, weight: '700' } },
             stacked: true
           }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 05 STAKERS DISTRIBUTION (per-validator counts from on-chain Stake events) ----------
+const STAKERS_PER_VALIDATOR = [
+  { addr: "0x8d9b6ab3fe8ebf16d9242e48fefb89360fa62820", count: 160 },
+  { addr: "0xf84aed72066e635fd9b0f2fbddbdb77a8761d028", count: 91 },
+  { addr: "0xf57c7a5bcb023ab18683a46fa25a00fb19d651be", count: 65 },
+  { addr: "0xa90da6fba59d0ba2fb1348fd2f03b880742fa00e", count: 39 },
+  { addr: "0x31dd5a7429ae591d2d73935c001dd148fabdd2cf", count: 32 },
+  { addr: "0x31db81188a5cc391857624f668dda57ba7f2b074", count: 32 },
+  { addr: "0xa4c864e043ba00843fd502d85896c96ba5738c4c", count: 32 },
+  { addr: "0xc10ae5cd2c63e4065f81e241c93237e06e12d41b", count: 31 },
+  { addr: "0x84af28c88be1916ceb199394dd6a1493a1287ada", count: 29 },
+  { addr: "0xbf968b8a455da0dfc0852899c334b6f5f6e20b5f", count: 26 },
+  { addr: "0xa4c22224c33fcbf204841399df1f268d13de0339", count: 19 },
+  { addr: "0xecb60190a0bf9f4d8aa8cc2f0293aa91192d3187", count: 9 },
+  { addr: "0x579391c9865545000d8922acf71a660521cc6404", count: 9 }
+];
+function shortAddr(a) { return a.slice(0, 6) + '…' + a.slice(-4); }
+chartConfigs.stakers = {
+  build() {
+    const data = STAKERS_PER_VALIDATOR;
+    const labels = data.map(d => shortAddr(d.addr));
+    const counts = data.map(d => d.count);
+    const colors = data.map((_, i) => i < 3 ? RED : (i < 6 ? 'rgba(205,1,36,0.55)' : '#9CA3AF'));
+    return {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: counts,
+          backgroundColor: colors,
+          borderRadius: 2, barPercentage: 0.75
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: items => data[items[0].dataIndex].addr,
+              label: c => c.parsed.x + ' unique stakers'
+            }
+          }
+        },
+        onClick: (evt, els) => {
+          if (els.length > 0) {
+            const i = els[0].index;
+            window.open('https://chiliscan.com/address/' + data[i].addr, '_blank');
+          }
+        },
+        scales: {
+          x: { grid: baseGrid, ticks: { ...tickStyle(), maxTicksLimit: isMobile() ? 4 : 6 }, title: { display: true, text: 'Unique stakers (7M)', color: GREY, font: { size: 11, weight: '700' } } },
+          y: { grid: noGrid, ticks: { ...tickStyle(), font: { size: isMobile() ? 9 : 10, family: 'SF Mono, Menlo, Consolas, monospace' } } }
         }
       }
     };
