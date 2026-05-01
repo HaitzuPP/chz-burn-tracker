@@ -237,8 +237,13 @@
   footer a { color: var(--orange); border-bottom: 1px dotted var(--orange); text-decoration: none; }
   footer strong { color: var(--ink); font-weight: 600; }
 
+  /* Table wrapper for horizontal scroll on narrow screens */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 16px; }
+  .table-scroll::-webkit-scrollbar { height: 6px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--ink4); border-radius: 3px; }
+
   /* Sportico-style comparables / roster table */
-  table.comp-table, table.roster-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); margin-top: 16px; background: var(--paper); font-family: var(--crim); font-size: 14px; }
+  table.comp-table, table.roster-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); background: var(--paper); font-family: var(--crim); font-size: 14px; min-width: 560px; }
   table.comp-table thead th, table.roster-table thead th { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); font-weight: 500; padding: 12px 18px; border-bottom: 1px solid var(--border); text-align: left; background: rgba(15,26,46,.025); }
   table.comp-table thead th.num, table.roster-table thead th.num { text-align: right; }
   table.comp-table td, table.roster-table td { padding: 13px 18px; border-bottom: 1px solid var(--border); color: var(--ink2); vertical-align: middle; }
@@ -280,8 +285,24 @@
 
   /* Mobile */
   @media (max-width: 600px) {
-    .wrap { padding: 36px 18px 64px; }
-    .hero { flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 22px; margin-bottom: 28px; }
+    .wrap { padding: 0 18px 64px; }
+
+    /* Masthead: stack, hide secondary nav on tightest widths */
+    .masthead { padding: 12px 0; flex-wrap: wrap; gap: 6px; }
+    .masthead-l { font-size: 10px; letter-spacing: 0.16em; }
+    .masthead-r { font-size: 9.5px; letter-spacing: 0.1em; }
+
+    /* Ribbon: stack segments cleanly without orphan borders */
+    .data-freshness { flex-direction: column; align-items: stretch; }
+    .data-freshness > span { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.10); padding: 9px 14px; }
+    .data-freshness > span:last-child { border-bottom: none; }
+
+    /* KPI cards: tighter mobile padding so 4-up stack stays compact */
+    .kpi { min-height: auto; padding: 14px 16px 12px; }
+    .kpi .value { font-size: 28px; }
+    .kpi-spark { height: 26px; margin-top: 6px; }
+
+    .hero { flex-direction: column; align-items: flex-start; gap: 14px; padding: 24px 0 22px; margin-bottom: 28px; }
     .stamp { text-align: left; }
     h1 { font-size: 30px; }
     .sub { font-size: 16px; }
@@ -423,7 +444,7 @@
       </div>
       <ul class="bullets">
         <li><b>Mechanism:</b> 10% of Fan Token revenue routed to open-market CHZ buybacks; purchased CHZ sent to a permanent burn destination. Per the <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">Chiliz 2030 roadmap announcement</a>.</li>
-        <li><b>Execution speed:</b> ~30 days from announcement to first executed burn (Feb 9 → Mar 5 first transfer).</li>
+        <li><b>Execution speed:</b> 24 days from announcement to first executed burn (Feb 9 → Mar 5 first transfer to burn destination).</li>
       </ul>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
       <h3 class="section-sub">The flywheel, end to end</h3>
@@ -629,6 +650,7 @@
         </div>
       </div>
       <p class="takeaway">CHZ run-rate placed alongside other major deflationary programs. Programs are <b>not directly comparable</b> due to mechanism heterogeneity, but the table contextualises pace.</p>
+      <div class="table-scroll">
       <table class="comp-table">
         <thead>
           <tr>
@@ -642,14 +664,14 @@
         <tbody>
           <tr>
             <td><b>MKR</b></td>
-            <td class="num">$0.7B</td>
+            <td class="num">$1.5B</td>
             <td class="num"><b>2.30%</b></td>
             <td>Surplus-linked</td>
             <td><span class="tag">DSR</span></td>
           </tr>
           <tr>
             <td><b>BNB</b></td>
-            <td class="num">$84B</td>
+            <td class="num">$83B</td>
             <td class="num"><b>1.50%</b></td>
             <td>Profit-linked auto-burn</td>
             <td><span class="tag">Quarterly</span></td>
@@ -663,13 +685,14 @@
           </tr>
           <tr>
             <td><b>ETH</b></td>
-            <td class="num">$320B</td>
+            <td class="num">$223B</td>
             <td class="num"><b>0.20%</b></td>
             <td>Fee-burn (transactional)</td>
             <td><span class="tag">EIP-1559</span></td>
           </tr>
         </tbody>
       </table>
+      </div>
       <p class="takeaway" style="margin-top: 14px; font-size: 12px; color: var(--ink3);"><b>Mechanism notes:</b> MKR burns are surplus-linked (DSR-driven). BNB is profit-linked (corporate auto-burn). ETH is fee-burn (transactional). CHZ is revenue-linked (10% of Fan Token revenue). *CHZ figure annualised from one month, not seasonally adjusted.</p>
     </div>
   </section>
@@ -730,11 +753,11 @@
       <div class="card-head">
         <div>
           <div class="eyebrow">05 · STAKERS</div>
-          <h2>450 stakers, 13 validators, top three own 70%</h2>
+          <h2>450 stakers, 13 validators, top three hold 35% of stake</h2>
         </div>
       </div>
       <ul class="bullets">
-        <li>Top validator holds <b>36% of unique stakers</b>; top three capture 70%. The long tail of nine validators splits the remaining 30%.</li>
+        <li>Top three validators (by stake) hold <b>35% of total stake</b> across 218 of 450 unique stakers. By stakers count, the most-supported validator captures 36% of unique addresses on its own.</li>
         <li>Stake events outnumber unstake events <b>3,012 to 2,276</b> (1.32:1), but net stake balance still drifted lower. Average unstake size materially larger than average stake; exits concentrated, entries fragmented.</li>
       </ul>
 
@@ -762,6 +785,7 @@
       </div>
 
       <h3 class="section-sub">Validator roster</h3>
+      <div class="table-scroll">
       <table class="roster-table">
         <thead>
           <tr>
@@ -776,6 +800,7 @@
         </thead>
         <tbody id="rosterBody"></tbody>
       </table>
+      </div>
       <p class="takeaway" style="margin-top: 14px; font-size: 12px; color: var(--ink3);"><b>Data:</b> Per-validator stake from <code>getValidatorStatus(address)</code> on validator contract <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--gold); font-weight: 600; border-bottom: 1px dotted var(--gold);">0x0000...1000</a>. Stakers count from <code>Stake</code> event logs on staking contract <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000007001" target="_blank" style="color: var(--gold); font-weight: 600; border-bottom: 1px dotted var(--gold);">0x0000...7001</a>, 7-month sweep ~6M blocks, deduplicated.</p>
     </div>
   </section>
