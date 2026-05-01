@@ -113,10 +113,10 @@
   .tldr ul { list-style: none; padding: 0; margin: 0; }
   .tldr li { position: relative; padding: 9px 0 9px 22px; font-size: 13.5px; line-height: 1.55; color: var(--ink); border-bottom: 1px solid rgba(0,0,0,0.06); }
   .tldr li:last-child { border-bottom: none; }
-  .tldr li::before { content: "●"; position: absolute; left: 4px; color: var(--red); font-size: 9px; top: 14px; }
+  .tldr li::before { content: ""; position: absolute; left: 5px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
   .tldr li b { color: var(--red); font-weight: 800; }
   .tldr li .stat { display: inline-block; min-width: 78px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
-  .tldr li.proj::before { content: "○"; color: var(--grey); font-size: 11px; top: 12px; }
+  .tldr li.proj::before { background: transparent; border: 1.5px solid var(--grey); width: 8px; height: 8px; }
   .tldr li.proj b { color: var(--grey); }
 
   /* Bullet takeaways inside cards */
@@ -139,6 +139,18 @@
 
   /* Sub-anchor between hero and KPIs */
   .sub-anchor { margin-top: 14px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 800; }
+
+  /* Data freshness strip */
+  .data-freshness { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-top: 14px; margin-bottom: 36px; border: 1px solid var(--line); background: #FAFAFA; font-size: 11px; color: var(--grey); flex-wrap: wrap; }
+  .data-freshness b { color: var(--ink); font-weight: 700; }
+  .data-freshness .sep { color: var(--line); }
+  .data-freshness .pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 6px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @media (max-width: 600px) { .data-freshness { font-size: 10.5px; padding: 9px 12px; gap: 6px; } .data-freshness .sep { display: none; } }
+
+  /* Calendar bias legend */
+  .cal-legend { font-size: 11px; color: var(--grey); margin-top: 10px; padding: 0 4px; }
+  .cal-legend b { color: var(--ink); }
 
   /* TL;DR legend */
   .tldr-legend { display: flex; gap: 18px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
@@ -166,16 +178,19 @@
   .cal-impact { text-align: right; font-weight: 800; }
 
   /* Valuation block */
-  .valuation { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-top: 14px; }
-  .val-card { padding: 18px 22px; border-right: 1px solid var(--line); }
+  .valuation { display: grid; grid-template-columns: 0.85fr 1.3fr 0.85fr; border: 1px solid var(--line); margin-top: 14px; align-items: stretch; }
+  .val-card { padding: 18px 22px; border-right: 1px solid var(--line); opacity: 0.62; }
   .val-card:last-child { border-right: none; }
-  .val-card.base { background: rgba(205,1,36,0.04); }
+  .val-card.base { background: rgba(205,1,36,0.05); border-left: 3px solid var(--red); border-right: 3px solid var(--red); padding: 24px 22px; opacity: 1; }
   .val-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); font-weight: 800; margin-bottom: 6px; }
-  .val-card.base .val-label { color: var(--red); }
-  .val-card.bull .val-label { color: var(--green); }
-  .val-range { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+  .val-card.base .val-label { color: var(--red); font-size: 11px; letter-spacing: 0.14em; }
+  .val-card.bull .val-label { color: var(--grey); }
+  .val-card.bear .val-label { color: var(--grey); }
+  .val-range { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .val-card.base .val-range { font-size: 30px; color: var(--ink); }
   .val-range .unit { font-size: 13px; color: var(--grey); font-weight: 700; }
   .val-detail { font-size: 11.5px; color: var(--grey); margin-top: 4px; line-height: 1.45; }
+  .val-card.base .val-detail { font-size: 12px; }
 
   @media (max-width: 600px) {
     .calendar { grid-template-columns: 78px 1fr 60px; }
@@ -366,9 +381,9 @@
     <div>
       <h1>From Inflation to Deflation by 2030.</h1>
       <div class="sub">After eight years of pure inflation, the CHZ supply regime flipped in February 2026. This is the on-chain tracker.</div>
-      <div class="sub-anchor">What is executed so far ↓</div>
+      <div class="sub-anchor">Executed to date ↓</div>
     </div>
-    <div class="stamp">Astra Research · v1.2<br/>Lead analyst: JL · 30 Apr 2026</div>
+    <div class="stamp">Astra Research · v1.3<br/>JL · 30 Apr 2026</div>
   </div>
 
   <!-- TL;DR -->
@@ -406,8 +421,15 @@
     <div class="kpi">
       <div class="label">Market cap</div>
       <div class="value">$508M</div>
-      <div class="delta">10.33B CHZ circulating</div>
+      <div class="delta">Top 100, 10.33B circulating</div>
     </div>
+  </div>
+  <div class="data-freshness" id="dataFreshness">
+    <span><span class="pulse"></span>Live data</span>
+    <span class="sep">·</span>
+    <span>Price refresh: <b id="priceFreshness">on page load</b></span>
+    <span class="sep">·</span>
+    <span>On-chain stake/burn snapshot: <b>30 Apr 2026, 16:00 UTC</b></span>
   </div>
 
   <!-- TABS NAV -->
@@ -418,7 +440,7 @@
   </div>
 
   <p class="tab-desc active" data-desc="catalyst">The announcement that flipped the regime, and what 10% of Fan Token revenue is worth.</p>
-  <p class="tab-desc" data-desc="burns">20.1M burned, 1.06% annualised pace, and how that compares to BNB, ETH, and MKR programs.</p>
+  <p class="tab-desc" data-desc="burns">Burn pace, comp benchmarks across BNB, ETH and MKR programs, and what this regime is worth.</p>
   <p class="tab-desc" data-desc="float">7.89B free float, 23.4% staked, 450 unique stakers across 13 validators.</p>
 
   <!-- TAB PANEL: CATALYST -->
@@ -439,7 +461,8 @@
       </div>
       <ul class="bullets">
         <li><b>Mechanism:</b> Every Fan Token sale, marketplace trade, and gas fee feeds the buyback. Per the <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">Chiliz 2030 roadmap announcement</a>.</li>
-        <li><b>Counter-factual:</b> CHZ inflated annually for eight years before this commitment. No prior burn schedule, no buyback line item.</li>
+        <li><b>Execution speed:</b> Roughly <b>30 days from commitment to first executed burn</b> (Feb 9 announce → Mar 5 first transfer to burn destination). Operational follow-through, not just a press release.</li>
+        <li><b>Counter-factual:</b> CHZ inflated annually for eight years before this commitment. No prior burn schedule. No prior buyback mechanism.</li>
       </ul>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
       <h3 class="section-sub">The flywheel, end to end</h3>
@@ -558,10 +581,11 @@
         <div class="cal-row">
           <div class="cal-when">Q4 '26</div>
           <div class="cal-tag risk">Risk</div>
-          <div>Post-tournament fan engagement decline. First test of whether burn pace holds without a major event.</div>
+          <div>Post-tournament engagement test. First check on whether burn pace holds without a tournament catalyst.</div>
           <div class="cal-impact" style="color: var(--red);">−</div>
         </div>
       </div>
+      <p class="cal-legend"><b>Bias key:</b> + supportive · ++ strongly supportive · − headwind. All forward dates indicative; subject to Chiliz roadmap updates.</p>
     </div>
   </section>
 
@@ -602,7 +626,7 @@
         </div>
         <ul class="bullets">
           <li>March 10.86M, April 9.25M, on-chain. Both at least 50x the prior baseline (~0.2M / month).</li>
-          <li>Volume scales directly with Fan Token engagement, so this pace tracks ecosystem usage.</li>
+          <li>Pace tracks Fan Token engagement directly, so the burn rate is a proxy for ecosystem usage.</li>
         </ul>
         <div class="chart-box"><canvas id="monthly"></canvas></div>
       </div>
@@ -700,25 +724,25 @@
           <h2>What this regime change is worth</h2>
         </div>
       </div>
-      <p class="takeaway">Implied fair value range from buyback flow alone, holding all other factors constant. Anchored on price-times-burn divided by free float, similar to the BNB methodology. <b>Base case implies $0.062 to $0.078</b> on a 12-month forward look, +25% to +60% from spot.</p>
+      <p class="takeaway">Implied fair value range from buyback flow. Anchored on price × burn divided by free float, similar to the BNB methodology. <b>Base case implies $0.062 to $0.078</b> on a 12-month forward look, +25% to +60% from spot.</p>
       <div class="valuation">
         <div class="val-card bear">
           <div class="val-label">Bear · Flat revenue</div>
-          <div class="val-range">$0.044 to $0.052<span class="unit"></span></div>
-          <div class="val-detail">Assumes burns flatline at 70M / yr, stake exits continue. Flat-to-down from spot.</div>
+          <div class="val-range">$0.044 to $0.052</div>
+          <div class="val-detail">Burns flatline at 70M / yr, stake exits continue.</div>
         </div>
         <div class="val-card base">
-          <div class="val-label">Base · Run-rate</div>
-          <div class="val-range">$0.062 to $0.078<span class="unit"></span></div>
-          <div class="val-detail">Assumes 110M / yr sustained, World Cup uplift moderate. +25% to +60% from spot.</div>
+          <div class="val-label">★ Base · Run-rate</div>
+          <div class="val-range">$0.062 to $0.078</div>
+          <div class="val-detail">110M / yr sustained, World Cup uplift moderate. +25% to +60% from spot.</div>
         </div>
         <div class="val-card bull">
           <div class="val-label">Bull · World Cup</div>
-          <div class="val-range">$0.092 to $0.115<span class="unit"></span></div>
-          <div class="val-detail">Assumes 245M / yr through tournament, stake ratio recovers. +85% to +135% from spot.</div>
+          <div class="val-range">$0.092 to $0.115</div>
+          <div class="val-detail">245M / yr through tournament, stake ratio recovers.</div>
         </div>
       </div>
-      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);"><b>Methodology:</b> 12-month implied fair value = (annualised buyback × multiplier) / free float, where multiplier reflects float-velocity capture (range 8 to 16x). Full sensitivity available on request. <b>Not a price target.</b> Astra Research scenarios; sensitive to assumptions.</p>
+      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);"><b>Methodology:</b> 12-month implied fair value = (annualised buyback × multiplier) / free float, where multiplier reflects float-velocity capture (range 8 to 16x). <b>Not a price target.</b> Astra Research scenarios; sensitive to assumptions.</p>
     </div>
   </section>
 
@@ -839,7 +863,7 @@
     </div>
 
     <div style="margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Position disclosure:</strong> Astra Research and principals may hold CHZ. Position-level holdings not disclosed. Informational only; not a recommendation.
+      <strong style="color: var(--ink);">Position disclosure:</strong> Astra Research and principals may hold CHZ. Position-level holdings not disclosed. Informational only. Not a recommendation.
     </div>
 
     <div style="margin-bottom: 10px;">
@@ -1146,6 +1170,8 @@ const pbEvents = [
   { idx: 5, label: 'BUYBACK PROGRAM ANNOUNCED',   short: 'ANNOUNCED', color: '#CD0124', y: 12 },
   { idx: 6, label: 'FIRST BURN EXECUTED',         short: 'FIRST BURN', color: '#CD0124', y: 12 }
 ];
+// Span annotation between markers
+const pbSpan = { fromIdx: 5, toIdx: 6, label: '~30 days from commitment to execution', y: 38 };
 
 // Plugin: vertical event lines + label pills
 const eventPlugin = {
@@ -1452,6 +1478,12 @@ document.querySelectorAll('.toggle').forEach(t => {
 (async () => {
   const ok = await tryRefreshLive('180d');
   if (ok) render('livePrice', '180d');
+  const el = document.getElementById('priceFreshness');
+  if (el) {
+    const now = new Date();
+    const stamp = now.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+    el.textContent = stamp;
+  }
 })();
 
 // ---- Tabs ----
