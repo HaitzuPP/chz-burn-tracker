@@ -379,11 +379,11 @@
   <!-- HERO -->
   <div class="hero">
     <div>
-      <h1>From Inflation to Deflation by 2030.</h1>
-      <div class="sub">After eight years of pure inflation, the CHZ supply regime flipped in February 2026. This is the on-chain tracker.</div>
+      <h1>CHZ supply regime change.</h1>
+      <div class="sub">In February 2026, Chiliz committed 10% of Fan Token revenue to open-market CHZ buybacks and burns. Net issuance turned negative for the first time in March. This page tracks the executed mechanism on-chain.</div>
       <div class="sub-anchor">Executed to date ↓</div>
     </div>
-    <div class="stamp">Astra Research · v1.3<br/>JL · 30 Apr 2026</div>
+    <div class="stamp">Astra Research · v1.4<br/>Jack Leung · 30 Apr 2026<br/><a href="#methodology" style="color: var(--red); text-decoration: none; border-bottom: 1px dotted var(--red);">Methodology &amp; sources</a></div>
   </div>
 
   <!-- TL;DR -->
@@ -395,33 +395,33 @@
     </div>
     <ul>
       <li><span class="stat">FEB '26</span> <b>Catalyst:</b> 10% of Fan Token revenue redirected to open-market CHZ buybacks.</li>
-      <li><span class="stat">9.2M</span> <b>Executed:</b> CHZ burned in April alone, 50x the prior monthly baseline.</li>
-      <li><span class="stat">+50%</span> <b>Rerate:</b> CHZ priced in the new regime within two months.</li>
-      <li class="proj"><span class="stat">2030</span> <b>Projection:</b> Net deflation crossover.</li>
+      <li><span class="stat">9.2M</span> <b>Executed:</b> CHZ burned in April, 50x the prior monthly baseline.</li>
+      <li><span class="stat">+50%</span> <b>Window:</b> CHZ moved +50% from Feb low to Apr (not beta-adjusted; coincident, not causal).</li>
+      <li class="proj"><span class="stat">2030</span> <b>Projection:</b> Net deflation crossover under modelled assumptions (see Burns &amp; Supply tab).</li>
     </ul>
   </div>
 
   <!-- KPI STRIP -->
   <div class="kpis">
     <div class="kpi">
-      <div class="label">April burn rate</div>
+      <div class="label">April burn (on-chain)</div>
       <div class="value">9.2M</div>
-      <div class="delta">50x prior baseline</div>
+      <div class="delta">50x prior monthly baseline</div>
     </div>
     <div class="kpi">
-      <div class="label">Annualised burn</div>
+      <div class="label">Annualised run-rate*</div>
       <div class="value">~110M</div>
       <div class="delta">≈ 1.06% of supply</div>
     </div>
     <div class="kpi">
       <div class="label">CHZ price</div>
       <div class="value">$0.0492</div>
-      <div class="delta">+50% from Feb low</div>
+      <div class="delta">+50% from Feb low (window)</div>
     </div>
     <div class="kpi">
-      <div class="label">Market cap</div>
+      <div class="label">Market cap (derived)</div>
       <div class="value">$508M</div>
-      <div class="delta">Top 100, 10.33B circulating</div>
+      <div class="delta">10.33B CHZ circulating</div>
     </div>
   </div>
   <div class="data-freshness" id="dataFreshness">
@@ -429,7 +429,9 @@
     <span class="sep">·</span>
     <span>Price refresh: <b id="priceFreshness">on page load</b></span>
     <span class="sep">·</span>
-    <span>On-chain stake/burn snapshot: <b>30 Apr 2026, 16:00 UTC</b></span>
+    <span>On-chain snapshot: <b>30 Apr 2026, 16:00 UTC</b></span>
+    <span class="sep">·</span>
+    <span style="color: var(--grey);">*Run-rate based on April 2026; pre-tournament; not seasonally adjusted.</span>
   </div>
 
   <!-- TABS NAV -->
@@ -439,9 +441,6 @@
     <button class="tab" data-tab="float" role="tab">Float &amp; Stakers</button>
   </div>
 
-  <p class="tab-desc active" data-desc="catalyst">The announcement that flipped the regime, and what 10% of Fan Token revenue is worth.</p>
-  <p class="tab-desc" data-desc="burns">Burn pace, comp benchmarks across BNB, ETH and MKR programs, and what this regime is worth.</p>
-  <p class="tab-desc" data-desc="float">7.89B free float, 23.4% staked, 450 unique stakers across 13 validators.</p>
 
   <!-- TAB PANEL: CATALYST -->
   <div class="tab-panel active" id="tab-catalyst" role="tabpanel">
@@ -460,9 +459,8 @@
         </div>
       </div>
       <ul class="bullets">
-        <li><b>Mechanism:</b> Every Fan Token sale, marketplace trade, and gas fee feeds the buyback. Per the <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">Chiliz 2030 roadmap announcement</a>.</li>
-        <li><b>Execution speed:</b> Roughly <b>30 days from commitment to first executed burn</b> (Feb 9 announce → Mar 5 first transfer to burn destination). Operational follow-through, not just a press release.</li>
-        <li><b>Counter-factual:</b> CHZ inflated annually for eight years before this commitment. No prior burn schedule. No prior buyback mechanism.</li>
+        <li><b>Mechanism:</b> 10% of Fan Token revenue routed to open-market CHZ buybacks; purchased CHZ sent to a permanent burn destination. Per the <a href="https://x.com/Chiliz/status/2027103512409051232" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">Chiliz 2030 roadmap announcement</a>.</li>
+        <li><b>Execution speed:</b> ~30 days from announcement to first executed burn (Feb 9 → Mar 5 first transfer).</li>
       </ul>
       <div class="chart-box tall"><canvas id="priceBurn"></canvas></div>
       <h3 class="section-sub">The flywheel, end to end</h3>
@@ -506,86 +504,65 @@
     </div>
   </section>
 
-  <!-- FAN TOKEN REVENUE BASELINE (Catalyst tab) -->
+  <!-- REVENUE BASELINE (compressed) -->
   <section>
     <div class="card">
       <div class="card-head">
         <div>
           <div class="eyebrow">REVENUE BASELINE</div>
-          <h2>What 10% of Fan Token revenue actually means</h2>
+          <h2>What 10% means in dollar terms</h2>
         </div>
       </div>
-      <p class="takeaway">April burn implies <b>~$50M / yr Fan Token revenue</b> (10% buyback × $5M observed). The 2026 World Cup is the primary upside catalyst.</p>
-      <div class="scenarios">
-        <div class="scen scen-bear">
-          <div class="scen-label">Bear · Flat revenue</div>
-          <div class="scen-value">$3.5<span class="unit">M / yr</span></div>
-          <div class="scen-usd">~70M CHZ / yr burned</div>
-          <div class="scen-note">No World Cup uplift; partnership churn at margin.</div>
-        </div>
-        <div class="scen scen-base">
-          <div class="scen-label">Base · Run-rate</div>
-          <div class="scen-value">$5.4<span class="unit">M / yr</span></div>
-          <div class="scen-usd">~110M CHZ / yr burned</div>
-          <div class="scen-note">April pace held through 2026.</div>
-        </div>
-        <div class="scen scen-bull">
-          <div class="scen-label">Bull · World Cup</div>
-          <div class="scen-value">$12<span class="unit">M / yr</span></div>
-          <div class="scen-usd">~245M CHZ / yr burned</div>
-          <div class="scen-note">2x revenue lift through tournament window, sustained.</div>
-        </div>
-      </div>
-      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);">Astra Research modelled scenarios. Fan Token revenue is implied from observed burn × 10x; Chiliz does not publish quarterly revenue. Not Chiliz guidance.</p>
+      <p class="takeaway">April's $452K-equivalent burn implies <b>~$50M annualised Fan Token revenue</b> at the 10% buyback rate. Range is sensitive to tournament seasonality and partnership cadence; Chiliz does not publish quarterly revenue.</p>
     </div>
   </section>
 
-  <!-- CATALYST CALENDAR -->
+  <!-- EVENT CALENDAR (factual, no bias) -->
   <section>
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">CATALYST CALENDAR</div>
-          <h2>What to watch through 2026</h2>
+          <div class="eyebrow">EVENT CALENDAR</div>
+          <h2>Scheduled and announced events through 2026</h2>
         </div>
       </div>
-      <p class="takeaway">Forward events that move the burn pace, the staking ratio, or the Fan Token revenue base. Track to confirm or invalidate the thesis.</p>
+      <p class="takeaway">Forward events that affect the burn pace, staking ratio, or Fan Token revenue base. Schedule only; no directional bias attached.</p>
       <div class="calendar">
         <div class="cal-row head">
-          <div>When</div><div>Type</div><div>Event</div><div>Bias</div>
+          <div>When</div><div>Type</div><div>Event</div><div></div>
         </div>
         <div class="cal-row">
           <div class="cal-when">May '26</div>
-          <div class="cal-tag bullish">Burn report</div>
-          <div>Next monthly burn report. Watch for sustained ≥9M CHZ pace and fan-token-revenue commentary.</div>
-          <div class="cal-impact" style="color: var(--green);">+</div>
+          <div class="cal-tag neutral">Burn report</div>
+          <div>Next scheduled monthly burn report from Chiliz.</div>
+          <div></div>
         </div>
         <div class="cal-row">
           <div class="cal-when">Jun '26</div>
-          <div class="cal-tag bullish">Tournament</div>
-          <div>FIFA World Cup group stage opens. Fan Token engagement and marketplace volume historically peak around tournaments.</div>
-          <div class="cal-impact" style="color: var(--green);">++</div>
+          <div class="cal-tag neutral">Tournament</div>
+          <div>FIFA World Cup group stage.</div>
+          <div></div>
         </div>
         <div class="cal-row">
           <div class="cal-when">Jul '26</div>
-          <div class="cal-tag bullish">Tournament</div>
-          <div>World Cup knockout rounds. Fan Token Play (win/burn for club tokens) live across competitive matches.</div>
-          <div class="cal-impact" style="color: var(--green);">++</div>
+          <div class="cal-tag neutral">Tournament</div>
+          <div>FIFA World Cup knockout rounds. Fan Token Play (win/burn for club tokens) active across competitive matches.</div>
+          <div></div>
         </div>
         <div class="cal-row">
           <div class="cal-when">Q3 '26</div>
           <div class="cal-tag neutral">Roadmap</div>
-          <div>National Team Tokens launch (per Chiliz 2030 roadmap). New supply of club partners drives FT revenue.</div>
-          <div class="cal-impact" style="color: var(--green);">+</div>
+          <div>National Team Tokens launch per the Chiliz 2030 roadmap.</div>
+          <div></div>
         </div>
         <div class="cal-row">
           <div class="cal-when">Q4 '26</div>
-          <div class="cal-tag risk">Risk</div>
-          <div>Post-tournament engagement test. First check on whether burn pace holds without a tournament catalyst.</div>
-          <div class="cal-impact" style="color: var(--red);">−</div>
+          <div class="cal-tag neutral">Period</div>
+          <div>Post-tournament window. First observation of burn pace outside a tournament cycle.</div>
+          <div></div>
         </div>
       </div>
-      <p class="cal-legend"><b>Bias key:</b> + supportive · ++ strongly supportive · − headwind. All forward dates indicative; subject to Chiliz roadmap updates.</p>
+      <p class="cal-legend">Forward dates indicative; subject to Chiliz roadmap updates. Schedule sourced from Chiliz public announcements and FIFA fixtures.</p>
     </div>
   </section>
 
@@ -688,7 +665,7 @@
           <h2>Where CHZ sits versus other deflationary tokens</h2>
         </div>
       </div>
-      <p class="takeaway">Annualised burn as a percentage of circulating supply. CHZ at <b>1.06%</b> sits in the middle of mature programs after just 60 days of execution.</p>
+      <p class="takeaway">Annualised burn as a percentage of circulating supply. CHZ run-rate placed alongside other major programs for context; programs are <b>not directly comparable</b> due to mechanism heterogeneity.</p>
       <div class="totals-grid">
         <div class="total-card">
           <div class="t-label">MKR (Smart Burn)</div>
@@ -700,10 +677,10 @@
           <div class="t-value">1.50<span class="unit">% / yr</span></div>
           <div class="t-usd">profit-linked auto-burn</div>
         </div>
-        <div class="total-card exec" style="border: 2px solid var(--red);">
-          <div class="t-label" style="color: var(--red);">CHZ (Apr '26 run-rate)</div>
+        <div class="total-card">
+          <div class="t-label">CHZ (Apr '26 run-rate)*</div>
           <div class="t-value">1.06<span class="unit">% / yr</span></div>
-          <div class="t-usd">~110M CHZ, fan-revenue-linked</div>
+          <div class="t-usd">fan-token revenue linked</div>
         </div>
         <div class="total-card">
           <div class="t-label">ETH (EIP-1559)</div>
@@ -711,38 +688,7 @@
           <div class="t-usd">net of issuance, post-Merge</div>
         </div>
       </div>
-      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);">Estimates derived from public reports. CHZ rate based on Apr 2026 actuals annualised; comps use rolling 12-month figures where available. Programs differ in mechanism (revenue share, profit share, fee burn) which affects predictability.</p>
-    </div>
-  </section>
-
-  <!-- VALUATION FRAMEWORK -->
-  <section>
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="eyebrow">VALUATION FRAMEWORK</div>
-          <h2>What this regime change is worth</h2>
-        </div>
-      </div>
-      <p class="takeaway">Implied fair value range from buyback flow. Anchored on price × burn divided by free float, similar to the BNB methodology. <b>Base case implies $0.062 to $0.078</b> on a 12-month forward look, +25% to +60% from spot.</p>
-      <div class="valuation">
-        <div class="val-card bear">
-          <div class="val-label">Bear · Flat revenue</div>
-          <div class="val-range">$0.044 to $0.052</div>
-          <div class="val-detail">Burns flatline at 70M / yr, stake exits continue.</div>
-        </div>
-        <div class="val-card base">
-          <div class="val-label">★ Base · Run-rate</div>
-          <div class="val-range">$0.062 to $0.078</div>
-          <div class="val-detail">110M / yr sustained, World Cup uplift moderate. +25% to +60% from spot.</div>
-        </div>
-        <div class="val-card bull">
-          <div class="val-label">Bull · World Cup</div>
-          <div class="val-range">$0.092 to $0.115</div>
-          <div class="val-detail">245M / yr through tournament, stake ratio recovers.</div>
-        </div>
-      </div>
-      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);"><b>Methodology:</b> 12-month implied fair value = (annualised buyback × multiplier) / free float, where multiplier reflects float-velocity capture (range 8 to 16x). <b>Not a price target.</b> Astra Research scenarios; sensitive to assumptions.</p>
+      <p class="takeaway" style="margin-top: 14px; font-size: 11.5px; color: var(--grey);"><b>Mechanism heterogeneity:</b> MKR burns are surplus-linked (DSR-driven), BNB is profit-linked (corporate auto-burn), ETH is fee-burn (transactional). CHZ is revenue-linked (10% of Fan Token revenue). Burn % alone is not a like-for-like metric. *CHZ figure annualised from one month; not seasonally adjusted.</p>
     </div>
   </section>
 
@@ -843,6 +789,50 @@
 
   </div><!-- /tab-panel float -->
 
+  <!-- METHODOLOGY -->
+  <div class="risk-block" id="methodology" style="background: #FAFAFA; border-left-color: var(--ink);">
+    <div class="eyebrow" style="color: var(--ink);">METHODOLOGY &amp; SOURCES</div>
+    <h2 style="font-size: 18px; margin: 4px 0 8px;">How every number on this page is computed</h2>
+    <div class="methodology" style="margin-top: 12px;">
+      <div class="meth-row">
+        <div class="meth-label">Cumulative burned (verified)</div>
+        <div class="meth-value">20.1M CHZ</div>
+        <div class="meth-note">Native balance of <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000000000" target="_blank" style="color: var(--red); font-weight: 700;">0x0000...0000</a>, queried at snapshot block via <code>eth_getBalance</code>.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">Total staked CHZ (verified)</div>
+        <div class="meth-value">2.42B CHZ</div>
+        <div class="meth-note">Native balance of validator system contract <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--red); font-weight: 700;">0x0000...1000</a> via <code>eth_getBalance</code>; per-validator delegation read via <code>getValidatorStatus(address)</code>.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">Stakers count (verified)</div>
+        <div class="meth-value">450 unique</div>
+        <div class="meth-note"><code>Stake(address validator, address staker, uint256 amount)</code> event logs on staking contract <a href="https://chiliscan.com/address/0x0000000000000000000000000000000000007001" target="_blank" style="color: var(--red); font-weight: 700;">0x0000...7001</a>; 7-month sweep, ~6M blocks, deduplicated by staker address.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">Circulating supply (derived)</div>
+        <div class="meth-value">10.33B CHZ</div>
+        <div class="meth-note">Computed as <code>market_cap / price</code> from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700;">CoinGecko</a> historical series. Third-party derived; not on-chain.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">Spot CHZ price (live)</div>
+        <div class="meth-value">$0.0492</div>
+        <div class="meth-note">CoinGecko Pro API at page load; updated via background fetch on tab change.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">Annualised run-rate (modelled)</div>
+        <div class="meth-value">~110M CHZ</div>
+        <div class="meth-note"><b>Assumption:</b> April 2026 burn (9.2M) × 12. <b>Caveats:</b> single month; pre-tournament; no seasonal adjustment.</div>
+      </div>
+      <div class="meth-row">
+        <div class="meth-label">2030 deflation crossover (modelled)</div>
+        <div class="meth-value">Year 4</div>
+        <div class="meth-note"><b>Assumption:</b> burn pace compounds at observed run-rate; CHZ inflation decays per Tokenomics 2.0 schedule (8.8% → 1.88% over 14 years). Crossover when annual burn exceeds annual issuance.</div>
+      </div>
+    </div>
+    <p class="takeaway" style="margin-top: 14px; margin-bottom: 0; color: var(--grey); font-size: 11.5px;">RPC: Ankr public Chiliz endpoint. Chain ID 88888. Snapshot cadence: weekly historical, daily forward. All on-chain queries reproducible via the addresses and method signatures above.</p>
+  </div>
+
   <!-- RISK FACTORS -->
   <div class="risk-block">
     <div class="eyebrow">RISK FACTORS</div>
@@ -859,11 +849,11 @@
     <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
 
     <div style="border-top: 1px solid var(--line); padding-top: 14px; margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Operator:</strong> This website is operated by <strong>Astra Research</strong>, an independent research firm. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. All information presented is sourced from public materials and Astra Research analysis.
+      <strong style="color: var(--ink);">Operator:</strong> This website is operated by <strong>Astra Research</strong>, an independent research entity. Author: <strong>Jack Leung</strong>. Astra Research is not a registered investment adviser or broker-dealer in any jurisdiction. It is not affiliated with, endorsed by, or sponsored by Chiliz Group, Socios.com, or any of their affiliates. Contact: <a href="mailto:research@astraresearch.com" style="color: var(--grey); border-bottom: 1px dotted var(--grey);">research@astraresearch.com</a>.
     </div>
 
     <div style="margin-bottom: 10px;">
-      <strong style="color: var(--ink);">Position disclosure:</strong> Astra Research and principals may hold CHZ. Position-level holdings not disclosed. Informational only. Not a recommendation.
+      <strong style="color: var(--ink);">Position disclosure:</strong> Astra Research and the author may hold CHZ at any point. No active CHZ derivatives positions or validator stake at the time of publication. Position-level holdings not disclosed. Informational only. Not a recommendation.
     </div>
 
     <div style="margin-bottom: 10px;">
