@@ -84,15 +84,16 @@
   .tldr-legend .lg.proj .dot { background: transparent; border: 1.5px solid var(--ink3); }
 
   /* KPI strip with sparklines */
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); margin-bottom: 0; background: var(--paper); }
-  .kpi { padding: 18px 22px 14px; border-right: 1px solid var(--border); position: relative; min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--border); margin-bottom: 0; background: var(--paper); }
+  .kpi { padding: 18px 22px 14px; border-right: 1px solid var(--border); position: relative; min-height: 130px; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
   .kpi:last-child { border-right: none; }
   .kpi .label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink3); font-weight: 500; }
   .kpi .value { font-family: var(--bask); font-size: 36px; font-weight: 500; margin-top: 4px; letter-spacing: -0.018em; line-height: 1; color: var(--ink); font-variation-settings: "opsz" 144; }
   .kpi .delta { font-family: var(--mono); font-size: 10.5px; margin-top: 4px; color: var(--ink2); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
   .kpi .delta.up { color: var(--green); }
   .kpi .delta.down { color: var(--red); }
-  .kpi-spark { height: 32px; margin-top: 8px; opacity: 0.8; }
+  .kpi-spark { position: relative; height: 32px; width: 100%; margin-top: 8px; opacity: 0.8; }
+  .kpi-spark canvas { width: 100% !important; max-width: 100%; height: 100% !important; }
 
   /* Bloomberg-style data ribbon */
   .data-freshness { display: flex; align-items: center; gap: 0; padding: 0; margin-bottom: 36px; background: var(--navy); color: var(--bg); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; flex-wrap: wrap; }
