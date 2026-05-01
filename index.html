@@ -486,6 +486,52 @@
   </section>
 
 
+  <!-- 04 FREE FLOAT -->
+  <section>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">04 · FREE FLOAT</div>
+          <h2>What is actually tradable, and how it is changing</h2>
+        </div>
+      </div>
+      <ul class="bullets">
+        <li><b>7.89B CHZ sits in free float today</b> (76.4% of circulating supply). 2.42B is locked in staking (23.4%), and 20.1M has been permanently burned by the buyback program.</li>
+        <li>Over the past 6 months, the staking ratio fell from <b>25.8% to 23.4%</b>, releasing roughly 409M CHZ from locked supply back into the tradable float. The buyback program offset 20.1M of that with permanent burns.</li>
+        <li><b>The race that matters:</b> staking exits have added more to the float than burns have removed. For free float to compress meaningfully, either burns need to scale or stakers need to come back. Both are plausible into the World Cup cycle.</li>
+      </ul>
+
+      <div class="totals-grid">
+        <div class="total-card exec">
+          <div class="t-label">Free float (tradable)</div>
+          <div class="t-value">7.89<span class="unit">B CHZ</span></div>
+          <div class="t-usd">76.4% of circulating supply</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">Locked in staking</div>
+          <div class="t-value">2.42<span class="unit">B CHZ</span></div>
+          <div class="t-usd">23.4%, across 13 validators</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">Cumulative burned</div>
+          <div class="t-value">20.1<span class="unit">M CHZ</span></div>
+          <div class="t-usd">≈ $0.99M, verified on-chain</div>
+        </div>
+        <div class="total-card">
+          <div class="t-label">6M free float change</div>
+          <div class="t-value">+409<span class="unit">M CHZ</span></div>
+          <div class="t-usd">+5.5%, mostly stake exits</div>
+        </div>
+      </div>
+
+      <div class="chart-box tall" style="margin-top: 22px;"><canvas id="stake"></canvas></div>
+
+      <div class="ledger-note" style="margin-top: 14px;">
+        <div><b>Data sources:</b> Staked CHZ read directly from validator system contract <a href="https://scan.chiliz.com/address/0x0000000000000000000000000000000000001000" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...1000</a>. Cumulative burns read from buyback destination <a href="https://scan.chiliz.com/address/0x0000000000000000000000000000000000000000" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">0x0000...0000</a> (10.86M burned mid-March, 9.25M mid-April, both verifiable on-chain). Circulating supply from <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank" style="color: var(--red); font-weight: 700; text-decoration: underline;">CoinGecko</a> historical market caps. 13 active validators today (Chiliz docs cite the original 11).</div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div style="margin-bottom: 14px;">Sources: <a href="https://www.chiliz.com/chz-burn-report-march-april-2026/" target="_blank">Chiliz Burn Report (Mar to Apr 2026)</a> · <a href="https://docs.chiliz.com/learn/about-chiliz-chain/tokenomics" target="_blank">Chiliz Tokenomics 2.0 Docs</a> · <a href="https://www.coingecko.com/en/coins/chiliz" target="_blank">CoinGecko</a> · <a href="https://www.chiliz.com/chiliz-group-announces-gamified-fan-tokens-including-disruptive-new-mint-and-burn-tokenomics/" target="_blank">Mint and Burn Tokenomics</a>.</div>
 
@@ -896,6 +942,110 @@ chartConfigs.priceBurn = {
             position: 'right', grid: noGrid,
             ticks: { ...tickStyle(), callback: v => '$' + v.toFixed(3) },
             title: { display: true, text: 'CHZ Price (USD)', color: GREY, font: { size: 11, weight: '700' } }
+          }
+        }
+      }
+    };
+  }
+};
+
+// ---------- 04 FREE FLOAT (on-chain stack) ----------
+// Snapshots: [timestamp_ms, free_float_chz, staked_chz, cumulative_burned_chz]
+// Stake from validator contract 0x0000...1000, burns from 0x0000...0000, supply from CoinGecko
+const STAKE_SNAPSHOTS = [[1761926878166,7480494627,2598824852,899],[1763136478435,7514912897,2600829594,899],[1764346078713,7434993374,2690749047,899],[1765555679035,7478448324,2678802297,899],[1766765279391,7564382282,2608098979,899],[1767974879650,7575195805,2605637586,899],[1769184479906,7691139290,2502120521,899],[1769702869117,7717068189,2506797894,899],[1769962069462,7725004973,2484544558,899],[1770221269716,7726513178,2485926133,899],[1770480469978,7726152864,2489730757,899],[1770739670240,7758861456,2463078025,899],[1770998870622,7750745333,2474267918,899],[1771258070883,7752929353,2476720148,899],[1771517271206,7751420297,2482697064,899],[1771776471468,7990347462,2248093829,899],[1772035671814,7804207963,2441029478,899],[1772294872083,7813046680,2435673011,899],[1772554072351,7818633171,2433576400,899],[1772813272614,7956904370,2299409311,899],[1773072472877,7948819332,2311918920,899],[1773331673135,7813119402,2448539979,899],[1773590873397,7807548069,2446961192,899],[1773850073741,7796459012,2461590735,899],[1774109274007,7795800050,2465769921,10860000],[1774368474272,7934739707,2330324184,10860000],[1774627674536,7829503316,2438388025,10860000],[1774886874794,7848221066,2427159664,10860000],[1775146075055,7843889498,2433419952,10860000],[1775405275403,7871413613,2417137207,10860000],[1775664475750,7864456133,2424274597,10860000],[1775923676098,7860685869,2432834492,10110000],[1776182876558,7872144203,2436486437,10120000],[1776442076817,7861630636,2432159384,20111530],[1776701277121,7872237090,2426402220,20111530],[1776960477380,7867849151,2435599239,20111530],[1777219677652,7882611590,2424927270,20111530],[1777478877912,7889453803,2420974207,20111530]];
+
+const STAKE_EVENTS = [
+  { ts: Date.UTC(2026, 1, 9),  short: 'ANNOUNCED',  color: '#CD0124', y: 12 },
+  { ts: Date.UTC(2026, 3, 10), short: 'BURN REPORT', color: '#CD0124', y: 36 }
+];
+
+chartConfigs.stake = {
+  build() {
+    const pts = STAKE_SNAPSHOTS;
+    const labels = pts.map(p => {
+      const d = new Date(p[0]);
+      return d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getDate();
+    });
+    const fullLabels = pts.map(p => {
+      const d = new Date(p[0]);
+      return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    });
+
+    // Three stacked datasets in order: free float (bottom), staked, burned (top)
+    const freeFloat = pts.map(p => p[1] / 1e9);
+    const staked = pts.map(p => p[2] / 1e9);
+    const burned = pts.map(p => p[3] / 1e9);
+
+    const events = STAKE_EVENTS
+      .map(ev => {
+        const idx = findNearestIdx(pts, ev.ts);
+        return idx >= 0 ? { idx, short: ev.short, color: ev.color, y: ev.y } : null;
+      })
+      .filter(Boolean);
+
+    return {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Free float',
+            data: freeFloat,
+            borderColor: '#9CA3AF',
+            backgroundColor: 'rgba(156,163,175,0.45)',
+            fill: 'origin', tension: 0.2, pointRadius: 0, borderWidth: 1.5, order: 3
+          },
+          {
+            label: 'Staked',
+            data: staked,
+            borderColor: 'rgba(205,1,36,0.9)',
+            backgroundColor: 'rgba(205,1,36,0.55)',
+            fill: '-1', tension: 0.2, pointRadius: 0, borderWidth: 1.5, order: 2
+          },
+          {
+            label: 'Cumulative burned',
+            data: burned,
+            borderColor: '#0A0A0A',
+            backgroundColor: 'rgba(10,10,10,0.85)',
+            fill: '-1', tension: 0.05, pointRadius: 0, borderWidth: 1.5, order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+        interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: events.length ? 60 : 8 } },
+        plugins: {
+          legend: {
+            display: true, position: 'bottom',
+            labels: { boxWidth: 10, font: { size: 11 }, padding: 12, color: INK }
+          },
+          tooltip: {
+            callbacks: {
+              title: items => fullLabels[items[0].dataIndex],
+              label: c => {
+                const v = c.parsed.y;
+                if (c.dataset.label === 'Cumulative burned') return c.dataset.label + ': ' + (v * 1e9 / 1e6).toFixed(1) + 'M CHZ';
+                return c.dataset.label + ': ' + v.toFixed(2) + 'B CHZ';
+              },
+              footer: items => {
+                const idx = items[0].dataIndex;
+                const p = pts[idx];
+                const total = (p[1] + p[2] + p[3]) / 1e9;
+                const stakePct = (p[2] / (p[1] + p[2] + p[3]) * 100).toFixed(1);
+                return 'Total: ' + total.toFixed(2) + 'B  |  Staked: ' + stakePct + '%';
+              }
+            }
+          },
+          eventLines: { events }
+        },
+        scales: {
+          x: { grid: noGrid, ticks: { ...tickStyle(), autoSkip: true, maxTicksLimit: isMobile() ? 5 : 8, maxRotation: 0, font: { size: isMobile() ? 9 : 10 } }, stacked: true },
+          y: {
+            grid: baseGrid,
+            ticks: { ...tickStyle(), callback: v => v.toFixed(1) + 'B', maxTicksLimit: isMobile() ? 5 : 6 },
+            title: { display: true, text: 'Circulating supply, stacked (B CHZ)', color: GREY, font: { size: 11, weight: '700' } },
+            stacked: true
           }
         }
       }
