@@ -1661,13 +1661,157 @@ setTimeout(() => {
 (async () => {
   const ok = await tryRefreshLive('180d');
   if (ok) render('livePrice', '180d');
-  const el = document.getElementById('priceFreshness');
-  if (el) {
-    const now = new Date();
-    const stamp = now.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
-    el.textContent = stamp;
-  }
 })();
+
+// ---- Live data patcher (reads data.json from the cron job) ----
+async function patchFromDataJson() {
+  let d;
+  try {
+    const r = await fetch('data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('no data.json');
+    d = await r.json();
+  } catch (e) {
+    return; // fall back to hardcoded snapshot values
+  }
+
+  const fmtChz = (n) => n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : (n / 1e3).toFixed(0) + 'K';
+  const fmtUsd = (n) => n >= 1e9 ? '$' + (n / 1e9).toFixed(1) + 'B' : '$' + (n / 1e6).toFixed(0) + 'M';
+
+  // Bloomberg ribbon — show actual generated_at timestamp
+  const stamp = new Date(d.generated_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+  const priceFresh = document.getElementById('priceFreshness');
+  if (priceFresh) priceFresh.textContent = stamp;
+  const onChain = document.querySelector('.data-freshness span:nth-child(3) b');
+  if (onChain) onChain.textContent = stamp;
+
+  // Hero stats panel
+  const heroStats = document.querySelectorAll('.hero-stat-value');
+  if (heroStats[0]) heroStats[0].textContent = fmtChz(d.burns.last_month_chz);
+  if (heroStats[1]) heroStats[1].textContent = fmtChz(d.burns.annualised_chz);
+  if (heroStats[2]) heroStats[2].textContent = fmtChz(d.supply.free_float_chz);
+
+  // Hero stat notes
+  const heroNotes = document.querySelectorAll('.hero-stat-note');
+  if (heroNotes[1]) heroNotes[1].textContent = `≈ ${d.burns.annualised_pct_of_supply}% of supply per year, last-month × 12`;
+  if (heroNotes[2]) heroNotes[2].textContent = `${d.supply.free_float_pct}% of circulating, ${d.supply.stake_ratio_pct}% staked, ${fmtChz(d.burns.cumulative_chz)} burned`;
+
+  // KPI strip
+  const kpiValues = document.querySelectorAll('.kpi .value');
+  if (kpiValues[0]) kpiValues[0].textContent = fmtChz(d.burns.last_month_chz);
+  if (kpiValues[1]) kpiValues[1].textContent = fmtChz(d.burns.annualised_chz);
+  if (kpiValues[2]) kpiValues[2].textContent = '$' + d.price.usd.toFixed(4);
+  if (kpiValues[3]) kpiValues[3].textContent = fmtUsd(d.price.market_cap_usd);
+
+  const kpiDeltas = document.querySelectorAll('.kpi .delta');
+  if (kpiDeltas[1]) kpiDeltas[1].textContent = `≈ ${d.burns.annualised_pct_of_supply}% of supply`;
+  if (kpiDeltas[3]) kpiDeltas[3].textContent = (d.supply.circulating_chz / 1e9).toFixed(2) + 'B CHZ circulating';
+
+  // Methodology table values
+  const meths = document.querySelectorAll('.meth-value');
+  if (meths.length >= 6) {
+    meths[0].textContent = fmtChz(d.burns.cumulative_chz);
+    meths[1].textContent = (d.stake.total_chz / 1e9).toFixed(2) + 'B CHZ';
+    meths[2].textContent = d.stake.unique_stakers_180d + ' unique';
+    meths[3].textContent = (d.supply.circulating_chz / 1e9).toFixed(2) + 'B CHZ';
+    meths[4].textContent = '$' + d.price.usd.toFixed(4);
+    meths[5].textContent = fmtChz(d.burns.annualised_chz);
+  }
+
+  // Update inline CHZ_DATA[180d] with fresh price history if present
+  if (d.price.history_180d && d.price.history_180d.length > 5) {
+    CHZ_DATA['180d'] = d.price.history_180d;
+    if (chartConfigs.livePrice) render('livePrice', '180d');
+  }
+
+  // If we have monthly burn deltas, update the burn charts
+  if (d.burns.monthly && d.burns.monthly.length >= 2) {
+    // Replace the last two entries of monChz / pbBurnsChz with fresh deltas (M CHZ)
+    const recent = d.burns.monthly.slice(-2).map(m => +(m.delta_chz / 1e6).toFixed(2));
+    if (typeof monChz !== 'undefined' && monChz.length >= 2) {
+      monChz[monChz.length - 2] = recent[0];
+      monChz[monChz.length - 1] = recent[1];
+      if (chartConfigs.monthly) render('monthly', 'chz');
+    }
+    if (typeof pbBurnsChz !== 'undefined' && pbBurnsChz.length >= 2) {
+      pbBurnsChz[pbBurnsChz.length - 2] = recent[0];
+      pbBurnsChz[pbBurnsChz.length - 1] = recent[1];
+      if (chartConfigs.priceBurn) render('priceBurn', 'chz');
+    }
+    // Cumulative: end at the verified cumulative_chz value
+    if (typeof cumChz !== 'undefined' && cumChz.length >= 1) {
+      cumChz[cumChz.length - 1] = +(d.burns.cumulative_chz / 1e6).toFixed(2);
+      if (chartConfigs.cumBurn) render('cumBurn', 'chz');
+    }
+  }
+
+  // Stake snapshot history can refresh the stack chart and free-float ratio
+  if (d.stake.history && d.stake.history.length > 0 && d.burns.history && d.burns.history.length > 0) {
+    // Build new STAKE_SNAPSHOTS-shape: [ts, free_float, staked, cumul_burned]
+    const stakeMap = new Map(d.stake.history);
+    const burnMap = new Map(d.burns.history);
+    const priceMap = new Map((d.price.history_180d || []).map(p => [p[0], p[1]]));
+    const newSnaps = [];
+    for (const [ts, st] of d.stake.history) {
+      // Find nearest burn ts
+      let nearestBurn = 0;
+      let bestDiff = Infinity;
+      for (const [bts, bv] of d.burns.history) {
+        const diff = Math.abs(bts - ts);
+        if (diff < bestDiff) { bestDiff = diff; nearestBurn = bv; }
+      }
+      // Approximate supply at this ts from market_cap / price near this date
+      const supply = d.supply.circulating_chz; // simple: hold supply near current
+      const free = Math.max(0, supply - st - nearestBurn);
+      newSnaps.push([ts, free, st, nearestBurn]);
+    }
+    if (newSnaps.length > 5 && typeof STAKE_SNAPSHOTS !== 'undefined') {
+      STAKE_SNAPSHOTS.length = 0;
+      newSnaps.forEach(s => STAKE_SNAPSHOTS.push(s));
+      if (chartConfigs.stake) render('stake', 'chz');
+    }
+  }
+
+  // Validator roster from on-chain
+  if (d.stake.validators && d.stake.validators.length > 0 && typeof ROSTER !== 'undefined' && typeof renderRoster === 'function') {
+    ROSTER.length = 0;
+    d.stake.validators.forEach(v => {
+      const stakers = (d.stake.stakers_per_validator && d.stake.stakers_per_validator[v.addr]) || 0;
+      ROSTER.push({ addr: v.addr, stake: v.stake, stakers });
+    });
+    renderRoster();
+  }
+
+  // KPI sparklines: refresh from fresh history
+  if (d.burns.monthly && d.burns.monthly.length >= 4) {
+    const monthlyDeltas = d.burns.monthly.slice(-6).map(m => m.delta_chz / 1e6);
+    const cumulative = [];
+    let acc = 0;
+    monthlyDeltas.forEach(v => { acc += v; cumulative.push(acc); });
+    // Re-create sparklines if Chart instances exist
+    document.querySelectorAll('.kpi-spark canvas').forEach(c => {
+      const id = c.id;
+      const existing = Chart.getChart(c);
+      if (existing) existing.destroy();
+    });
+    setTimeout(() => {
+      makeSpark('sparkBurn', monthlyDeltas, '#D94F2A');
+      makeSpark('sparkCum', cumulative, '#D94F2A');
+      if (d.price.history_180d && d.price.history_180d.length > 5) {
+        const px = d.price.history_180d.map(p => p[1]);
+        makeSpark('sparkPrice', px.filter((_, i) => i % 4 === 0), '#1A7A3A');
+      }
+      if (d.price.market_cap_180d && d.price.market_cap_180d.length > 5) {
+        const mc = d.price.market_cap_180d.map(p => p[1] / 1e6);
+        makeSpark('sparkMcap', mc.filter((_, i) => i % 4 === 0), '#0D0C09');
+      }
+    }, 100);
+  }
+}
+
+// Run patcher after initial paint so we don't block above-the-fold render
+window.addEventListener('load', () => {
+  setTimeout(patchFromDataJson, 50);
+});
 
 // ---- Tabs ----
 function switchTab(tabId) {
