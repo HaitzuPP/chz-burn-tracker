@@ -1189,8 +1189,8 @@ chartConfigs.livePrice = {
 };
 
 // ---------- 01 CUMULATIVE BURN ----------
-const cumLabels = ['Jan', 'Feb', 'Mar (T2.0)', 'Apr'];
-const cumChz = [0.4, 0.7, 8.6, 17.8]; // M CHZ cumulative
+const cumLabels = ['Jan', 'Feb', 'Mar', 'Apr'];
+const cumChz = [0, 0, 10.86, 20.11]; // M CHZ cumulative — buyback destination, on-chain
 chartConfigs.cumBurn = {
   build(mode) {
     const data = mode === 'usd' ? cumChz.map(v => +(v * PRICE).toFixed(3)) : cumChz;
@@ -1215,7 +1215,7 @@ chartConfigs.cumBurn = {
 
 // ---------- 02 MONTHLY VOLUME ----------
 const monLabels = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const monChz = [0.18, 0.22, 0.41, 0.31, 7.9, 9.2];
+const monChz = [0.18, 0.22, 0.41, 0.31, 10.86, 9.25]; // March / April verified on-chain
 chartConfigs.monthly = {
   build(mode) {
     const data = mode === 'usd' ? monChz.map(v => +(v * PRICE).toFixed(3)) : monChz;
@@ -1321,7 +1321,7 @@ chartConfigs.netSupply = {
 
 // ---------- 07 PRICE × BURNS (Sep 2025 to Apr 2026 timeline with event markers) ----------
 const pbLabels = ['Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'];
-const pbBurnsChz = [0.14, 0.16, 0.18, 0.22, 0.41, 0.31, 7.90, 9.20];
+const pbBurnsChz = [0.14, 0.16, 0.18, 0.22, 0.41, 0.31, 10.86, 9.25]; // Mar/Apr verified on-chain
 const pbPrice    = [0.036, 0.039, 0.040, 0.041, 0.041, 0.043, 0.046, 0.049];
 
 // Event markers (idx into labels array)
